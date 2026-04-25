@@ -282,6 +282,46 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
 .copy-btn:hover{opacity:1}
 .copy-btn.copied{color:#4caf50;opacity:1}
 
+/* ===== MAPS GALLERY ===== */
+.map-card{cursor:pointer;position:relative;text-align:center;padding:0.8em;transition:var(--transition)}
+.map-card:hover{border-color:var(--gold);box-shadow:0 0 20px var(--gold-glow)}
+.map-thumb{max-width:100%;max-height:400px;width:auto;height:auto;border-radius:var(--radius);display:block;margin:0 auto;border:1px solid var(--navy-4);transition:var(--transition)}
+.map-card:hover .map-thumb{border-color:var(--gold-dim)}
+.map-label{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);margin-top:0.5em;font-weight:600}
+.map-desc{font-size:0.85rem;color:var(--text-dim);margin-top:0.3em;max-width:600px;margin-left:auto;margin-right:auto}
+.map-hint{font-size:0.75rem;color:var(--text-dim);margin-top:0.4em;opacity:0.6;font-style:italic}
+
+/* ===== LIGHTBOX ===== */
+#lightbox{display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,0.92);
+  justify-content:center;align-items:center;
+  flex-direction:column;
+  padding:1.5em;
+  cursor:zoom-out;
+}
+#lightbox.show{display:flex;animation:fadeIn 0.25s ease}
+#lightbox .lb-close{
+  position:absolute;top:0.8em;right:0.8em;
+  width:44px;height:44px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  border-radius:50%;color:#fff;font-size:1.4rem;
+  cursor:pointer;transition:var(--transition);
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;z-index:1001;
+}
+#lightbox .lb-close:hover{background:rgba(255,255,255,0.25)}
+#lightbox #lb-img{
+  max-width:90vw;max-height:82vh;
+  width:auto;height:auto;
+  border-radius:var(--rad-lg);
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+  cursor:default;
+}
+#lightbox .lb-label{
+  font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);
+  margin-top:1em;text-align:center;
+}
+
 /* ===== MISC ===== */
 .mt-1{margin-top:1em}
 .mb-1{margin-bottom:1em}
@@ -353,7 +393,6 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
       <li><a href="#" data-page="locations"><span class="icon">🏛️</span> Locations</a></li>
       <li><a href="#" data-page="maps"><span class="icon">🗺️</span> Maps</a></li>
       <li><a href="#" data-page="npcs"><span class="icon">👥</span> NPC Index</a></li>
-      <li><a href="#" data-page="maps"><span class="icon">🗺️</span> Maps</a></li>
       <li><a href="#" data-page="encounters"><span class="icon">⚡</span> Encounters</a></li>
       <li><a href="#" data-page="magic-items"><span class="icon">✨</span> Magic Items</a></li>
       <li><a href="#" data-page="dm-tools"><span class="icon">🛠️</span> DM Tools</a></li>
@@ -772,46 +811,6 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
           <p><strong>Tactics:</strong> Sparkrender uses the environment to his advantage — lightning strikes, crumbling ledges, crystal shards. He's arrogant but smart: if reduced to 30 HP, he may try to negotiate or flee. The kobold shaman can cast <em>thunderwave</em> to push characters off ledges.</p>
         </div>
 
-      </div>
-    </section>
-
-    <!-- ===== MAGIC ITEMS ===== -->
-    <section id="page-maps" class="page">
-      <h2>🗺️ Maps</h2>
-      <p class="text-dim mb-1">Visual maps of Stormwreck Isle. Click any map to view full size.</p>
-
-      <div style="display:grid;gap:2rem;margin-top:1.5rem">
-
-        <div class="card map-card">
-          <h3>Stormwreck Isle — Overview</h3>
-          <p class="text-dim" style="margin-bottom:0.8rem">The full island, showing Dragon's Rest, Seagrow Caves, Wreck of the Compass Rose, Clifftop Observatory, and Stormwreck Peak.</p>
-          <img src="map-isle.jpg" alt="Stormwreck Isle overview map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
-        </div>
-
-        <div class="card map-card">
-          <h3>Dragon's Rest</h3>
-          <p class="text-dim" style="margin-bottom:0.8rem">The ruined monastery — starting area and safe haven. Runara's sanctuary, courtyard, and cliffside paths.</p>
-          <img src="map-dragons-rest.jpg" alt="Dragon's Rest map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
-        </div>
-
-        <div class="card map-card">
-          <h3>Seagrow Caves</h3>
-          <p class="text-dim" style="margin-bottom:0.8rem">Coastal cave network with myconid territory, harpy nests, and hidden chambers.</p>
-          <img src="map-seagrow-caves.jpg" alt="Seagrow Caves map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
-        </div>
-
-        <div class="card map-card">
-          <h3>Stormwreck Peak</h3>
-          <p class="text-dim" style="margin-bottom:0.8rem">The volcanic lair of Sparkrender. Kobold tunnels, lava chambers, and the dragon's throne room.</p>
-          <img src="map-stormwreck-peak.jpg" alt="Stormwreck Peak map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
-        </div>
-
-      </div>
-
-      <!-- Lightbox overlay -->
-      <div id="lightbox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;cursor:pointer;justify-content:center;align-items:center" onclick="closeLightbox(event)">
-        <span style="position:absolute;top:20px;right:30px;color:white;font-size:2.5rem;cursor:pointer;z-index:10000" onclick="closeLightbox(event)">&times;</span>
-        <img id="lightbox-img" src="" alt="Map full view" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:4px;box-shadow:0 0 40px rgba(0,0,0,0.8)">
       </div>
     </section>
 
@@ -1306,28 +1305,6 @@ document.addEventListener('keydown', e => {
     const lb = document.getElementById('lightbox');
     if(lb.classList.contains('show')) { closeLightbox(); return; }
     closeSidebar();
-  }
-});
-// ===== MAP LIGHTBOX =====
-function openLightbox(img) {
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightbox-img');
-  lbImg.src = img.src;
-  lb.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox(e) {
-  if(e) e.stopPropagation();
-  const lb = document.getElementById('lightbox');
-  lb.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', function(e) {
-  if(e.key === 'Escape') {
-    const lb = document.getElementById('lightbox');
-    if(lb.style.display === 'flex') closeLightbox(e);
   }
 });
 
