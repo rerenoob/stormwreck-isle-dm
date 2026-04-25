@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragons of Stormwreck Isle — DM Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f141e;
+  --navy-2:#131a2b;
+  --navy-3:#1a2540;
+  --navy-4:#243155;
+  --purple:#2a1f3d;
+  --purple-2:#3a2a5a;
+  --gold:#C9A84C;
+  --gold-dim:#a8852e;
+  --gold-glow:rgba(201,168,76,0.15);
+  --text:#e2dcd0;
+  --text-dim:#9a9280;
+  --text-bright:#f5efe0;
+  --body:16px;
+  --radius:8px;
+  --rad-lg:12px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --transition:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  font-size:var(--body);
+  line-height:1.6;
+  min-height:100vh;
+}
+a{color:var(--gold);text-decoration:none}
+a:hover{color:#e0c060}
+img{max-width:100%}
+h1,h2,h3,h4{font-family:'Cinzel',serif;font-weight:600;color:var(--text-bright);line-height:1.3}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;letter-spacing:0.02em}
+h2{font-size:clamp(1.2rem,3vw,1.8rem);border-bottom:2px solid var(--gold);padding-bottom:0.4em;margin-bottom:0.8em}
+h2 .gold{font-weight:400;font-size:0.7em}
+h3{font-size:1.15rem;color:var(--gold);margin-bottom:0.4em}
+h4{font-size:1rem;color:var(--text-bright);margin-bottom:0.3em}
+p{margin-bottom:0.7em}
+.tag{
+  display:inline-block;background:var(--gold);color:var(--navy);
+  font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
+  padding:0.15em 0.65em;border-radius:3px;
+}
+hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
+
+/* ===== LAYOUT ===== */
+#app{display:flex;min-height:100vh}
+#sidebar{
+  width:260px;min-width:260px;
+  background:var(--navy-2);
+  border-right:1px solid var(--navy-4);
+  padding:1.2em 0;
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  z-index:100;
+}
+#sidebar .logo{
+  padding:0.6em 1.2em 1em;
+  border-bottom:1px solid var(--navy-4);
+  margin-bottom:0.6em;
+}
+#sidebar .logo h1{font-size:1rem;line-height:1.3}
+#sidebar .logo small{font-size:0.65rem;color:var(--text-dim);display:block;margin-top:0.2em}
+.nav-list{list-style:none;padding:0 0.6em}
+.nav-list li{margin:1px 0}
+.nav-list a{
+  display:flex;align-items:center;gap:0.6em;
+  padding:0.55em 0.8em;
+  border-radius:var(--radius);
+  color:var(--text-dim);font-size:0.88rem;font-weight:500;
+  transition:var(--transition);
+}
+.nav-list a:hover{background:var(--navy-3);color:var(--text-bright)}
+.nav-list a.active{background:var(--gold-glow);color:var(--gold);font-weight:600}
+.nav-list a .icon{font-size:1.1rem;width:1.4em;text-align:center;flex-shrink:0}
+
+#main{
+  flex:1;min-width:0;
+  padding:1.5em 2em;
+  max-width:1024px;
+}
+.page{display:none;animation:fadeIn 0.35s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== HAMBURGER ===== */
+#hamburger{display:none;position:fixed;top:0.7em;right:0.7em;z-index:200;
+  width:42px;height:42px;border:none;border-radius:var(--radius);
+  background:var(--navy-3);color:var(--text-bright);font-size:1.4rem;
+  cursor:pointer;transition:var(--transition);padding:0;line-height:42px;text-align:center;
+}
+#hamburger:hover{background:var(--navy-4)}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--navy-2);
+  border:1px solid var(--navy-4);
+  border-radius:var(--rad-lg);
+  padding:1.2em 1.4em;
+  margin-bottom:1em;
+  transition:var(--transition);
+}
+.card:hover{border-color:rgba(201,168,76,0.2)}
+.card.gold{border-color:var(--gold-dim);background:var(--navy-3)}
+.card-grid{display:grid;gap:1em}
+.card-grid-2{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.card-grid-3{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+
+/* ===== HERO ===== */
+.hero{
+  background:linear-gradient(135deg,var(--navy-2) 0%,var(--purple) 50%,var(--navy-3) 100%);
+  border:1px solid var(--navy-4);
+  border-radius:var(--rad-lg);
+  padding:2.5em 2em;
+  text-align:center;
+  margin-bottom:1.5em;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,var(--gold-glow) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero h1{font-size:clamp(1.4rem,3.5vw,2rem);margin-bottom:0.3em}
+.hero .sub{font-family:'Sorts Mill Goudy',serif;font-size:1.1rem;color:var(--text-dim);font-style:italic}
+.hero-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:1em;margin-top:1.2em}
+.hero-stat{padding:0.5em 1em;background:var(--navy-3);border-radius:var(--radius);font-size:0.85rem}
+
+/* ===== STAT BLOCK ===== */
+.stat-block{display:flex;flex-wrap:wrap;gap:0.5em;margin:0.6em 0}
+.stat-block .stat{
+  background:var(--navy-3);padding:0.3em 0.7em;border-radius:4px;
+  font-size:0.82rem;font-weight:600;color:var(--text-bright);
+}
+.stat-block .stat span{color:var(--text-dim);font-weight:400}
+
+/* ===== DRAGON CARD ===== */
+.dragon-card h3{font-size:1.2rem}
+.dragon-card .type{font-family:'Sorts Mill Goudy',serif;font-style:italic;color:var(--text-dim);font-size:0.9rem;margin-bottom:0.5em}
+.dragon-card .desc{margin-bottom:0.6em}
+
+/* ===== SEARCH ===== */
+.search-box{
+  width:100%;padding:0.65em 1em;
+  background:var(--navy-3);border:1px solid var(--navy-4);
+  border-radius:var(--radius);color:var(--text-bright);
+  font-size:0.95rem;font-family:'Inter',sans-serif;
+  margin-bottom:1em;transition:var(--transition);
+}
+.search-box:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+
+/* ===== NPC LIST ===== */
+.npc-list{display:grid;gap:0.8em}
+.npc-item{
+  background:var(--navy-2);border:1px solid var(--navy-4);
+  border-radius:var(--radius);padding:0.8em 1em;
+  transition:var(--transition);
+}
+.npc-item.hidden{display:none}
+.npc-item h4{margin-bottom:0.15em}
+.npc-item .role{font-size:0.8rem;color:var(--gold);font-weight:500}
+.npc-item .desc{font-size:0.88rem;color:var(--text-dim);margin-top:0.3em}
+.npc-item .tags{margin-top:0.4em;display:flex;flex-wrap:wrap;gap:0.3em}
+
+/* ===== ENCOUNTER TABLE ===== */
+.enc-table{width:100%;border-collapse:collapse;font-size:0.88rem;margin:0.6em 0}
+.enc-table th,.enc-table td{
+  text-align:left;padding:0.4em 0.6em;border-bottom:1px solid var(--navy-4);
+}
+.enc-table th{color:var(--gold);font-weight:600;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em}
+
+/* ===== MAGIC ITEMS ===== */
+.magic-item h3{margin-bottom:0.2em}
+.magic-item .rarity{font-size:0.78rem;color:var(--text-dim);font-style:italic;margin-bottom:0.4em}
+
+/* ===== BUTTONS ===== */
+.btn{
+  display:inline-flex;align-items:center;gap:0.4em;
+  padding:0.5em 1em;
+  border:none;border-radius:var(--radius);
+  font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;
+  cursor:pointer;transition:var(--transition);
+}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{background:#dbbf5e;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--gold);border:1px solid var(--gold-dim)}
+.btn-ghost:hover{background:var(--gold-glow)}
+.btn-sm{padding:0.3em 0.6em;font-size:0.78rem}
+.btn-danger{background:#8b2e2e;color:#f0d0d0}
+.btn-danger:hover{background:#a03838}
+
+/* ===== INITIATIVE TRACKER ===== */
+.init-form{display:flex;flex-wrap:wrap;gap:0.5em;margin-bottom:0.8em}
+.init-form input{
+  padding:0.45em 0.6em;background:var(--navy-3);border:1px solid var(--navy-4);
+  border-radius:4px;color:var(--text-bright);font-size:0.88rem;font-family:'Inter',sans-serif;
+}
+.init-form input:focus{outline:none;border-color:var(--gold)}
+.init-form input[type=number]{width:70px}
+.init-list{list-style:none}
+.init-list li{
+  display:flex;align-items:center;gap:0.5em;
+  padding:0.45em 0.6em;
+  border-bottom:1px solid var(--navy-4);
+  font-size:0.88rem;
+  transition:var(--transition);
+}
+.init-list li:first-child{border-top:2px solid var(--gold)}
+.init-list li.dead{opacity:0.4;text-decoration:line-through}
+.init-list li .init-name{flex:1;font-weight:500}
+.init-list li .init-roll{color:var(--gold);font-weight:600;min-width:2em;text-align:center}
+.init-list li .init-hp{color:var(--text-dim);min-width:3em;text-align:center}
+.init-list li .init-actions{display:flex;gap:0.3em}
+
+/* ===== DICE ROLLER ===== */
+.dice-panel{text-align:center}
+.dice-grid{display:flex;flex-wrap:wrap;gap:0.5em;justify-content:center;margin-bottom:0.8em}
+.dice-btn{
+  width:52px;height:52px;border-radius:var(--radius);
+  background:var(--navy-3);border:1px solid var(--navy-4);
+  color:var(--text-bright);font-weight:700;font-size:0.9rem;
+  cursor:pointer;transition:var(--transition);font-family:'Cinzel',serif;
+}
+.dice-btn:hover{background:var(--navy-4);border-color:var(--gold-dim);transform:scale(1.05)}
+.dice-btn.rolling{animation:diceShake 0.4s ease}
+@keyframes diceShake{
+  0%,100%{transform:rotate(0deg)}
+  25%{transform:rotate(-15deg) scale(1.1)}
+  50%{transform:rotate(15deg) scale(1.05)}
+  75%{transform:rotate(-10deg)}
+}
+.dice-result{
+  font-size:2.5rem;font-weight:900;color:var(--gold);
+  font-family:'Cinzel',serif;
+  margin:0.4em 0;
+  min-height:3rem;
+}
+.dice-mod{display:flex;align-items:center;gap:0.5em;justify-content:center;margin:0.5em 0}
+.dice-mod input{width:60px;text-align:center;padding:0.3em;background:var(--navy-3);border:1px solid var(--navy-4);border-radius:4px;color:var(--text-bright);font-size:0.95rem}
+.dice-mod input:focus{outline:none;border-color:var(--gold)}
+.dice-history{max-height:150px;overflow-y:auto;text-align:left;font-size:0.82rem;color:var(--text-dim);margin-top:0.5em}
+
+/* ===== ENCOUNTER GEN ===== */
+.encounter-gen{text-align:center;padding:1.5em}
+.encounter-gen .result{
+  margin-top:1em;padding:1em;background:var(--navy-3);
+  border-radius:var(--radius);
+}
+.encounter-gen .result .monster{font-size:1.1rem;font-weight:600;color:var(--gold)}
+.encounter-gen .result .detail{font-size:0.88rem;color:var(--text-dim);margin-top:0.3em}
+
+/* ===== REST TRACKER ===== */
+.rest-tracker{display:flex;flex-wrap:wrap;gap:0.8em;align-items:center}
+.rest-tracker .rest-count{font-size:2rem;font-weight:900;color:var(--gold);font-family:'Cinzel',serif;min-width:2.5em;text-align:center}
+
+/* ===== DM NOTES ===== */
+.dm-notes textarea{
+  width:100%;min-height:200px;
+  padding:0.8em;background:var(--navy-3);
+  border:1px solid var(--navy-4);border-radius:var(--radius);
+  color:var(--text-bright);font-size:0.9rem;font-family:'Sorts Mill Goudy',serif;
+  line-height:1.7;resize:vertical;
+  transition:var(--transition);
+}
+.dm-notes textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+
+/* ===== COPY BTN ===== */
+.copy-btn{float:right;opacity:0.5;cursor:pointer;transition:var(--transition);background:none;border:none;color:var(--gold);font-size:0.85rem}
+.copy-btn:hover{opacity:1}
+.copy-btn.copied{color:#4caf50;opacity:1}
+
+/* ===== MISC ===== */
+.mt-1{margin-top:1em}
+.mb-1{margin-bottom:1em}
+.flex-center{display:flex;align-items:center;justify-content:center;gap:0.5em}
+.gap-1{gap:1em}
+.text-center{text-align:center}
+.text-gold{color:var(--gold)}
+.text-dim{color:var(--text-dim)}
+.text-sm{font-size:0.85rem}
+.fw-600{font-weight:600}
+.session-badge{
+  display:inline-block;background:var(--purple-2);color:var(--gold);
+  padding:0.2em 0.7em;border-radius:4px;font-size:0.78rem;font-weight:600;
+}
+.location-sections{margin-top:0.5em}
+.location-sections .loc-desc{color:var(--text-dim);font-size:0.95rem;margin-bottom:0.6em}
+.location-sections h4{color:var(--gold);margin-top:0.6em}
+
+/* ===== FOOTER ===== */
+.footer{text-align:center;padding:2em 0 1em;color:var(--text-dim);font-size:0.78rem;border-top:1px solid var(--navy-4);margin-top:2em}
+
+/* ===== PRINT ===== */
+@media print{
+  #sidebar,#hamburger,#overlay{display:none!important}
+  body{background:#fff;color:#222;font-size:11pt}
+  #main{max-width:100%;padding:0.5in}
+  .card{background:#fff;border:1px solid #ccc;break-inside:avoid}
+  .hero{background:#f8f4e8;border:1px solid #ccc}
+  .hero::before{display:none}
+  h1,h2,h3,h4{color:#222}
+  .text-dim{color:#555}
+  .btn,.copy-btn{display:none}
+  .stat-block .stat{background:#eee;color:#222}
+  .stat-block .stat span{color:#555}
+  .init-form,.init-actions{display:none!important}
+  .dice-panel,.encounter-gen .btn,.rest-tracker .btn{display:none!important}
+  a{color:#1a3a6b}
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  #hamburger{display:block}
+  #sidebar{position:fixed;left:-280px;top:0;transition:var(--transition);box-shadow:var(--shadow)}
+  #sidebar.open{left:0}
+  #overlay.show{display:block}
+  #main{padding:1em;padding-top:3.5em}
+  .card-grid-2,.card-grid-3{grid-template-columns:1fr}
+  .hero-stats{flex-direction:column;align-items:center}
+  .init-form{flex-direction:column}
+  .init-form input[type=number]{width:100%}
+  .init-list li{flex-wrap:wrap}
+  .rest-tracker{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="logo">
+      <h1>⚔️ Stormwreck Isle</h1>
+      <small>DM Companion</small>
+    </div>
+    <ul class="nav-list">
+      <li><a href="#" data-page="home" class="active"><span class="icon">🏠</span> Home</a></li>
+      <li><a href="#" data-page="dragons"><span class="icon">🐉</span> The Three Dragons</a></li>
+      <li><a href="#" data-page="locations"><span class="icon">🗺️</span> Locations</a></li>
+      <li><a href="#" data-page="npcs"><span class="icon">👥</span> NPC Index</a></li>
+      <li><a href="#" data-page="encounters"><span class="icon">⚡</span> Encounters</a></li>
+      <li><a href="#" data-page="magic-items"><span class="icon">✨</span> Magic Items</a></li>
+      <li><a href="#" data-page="dm-tools"><span class="icon">🛠️</span> DM Tools</a></li>
+    </ul>
+  </nav>
+
+  <!-- OVERLAY -->
+  <div id="overlay"></div>
+
+  <!-- HAMBURGER -->
+  <button id="hamburger" aria-label="Toggle menu">☰</button>
+
+  <!-- MAIN CONTENT -->
+  <main id="main">
+
+    <!-- ===== HOME ===== -->
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <h1>🐉 Dragons of Stormwreck Isle</h1>
+        <div class="sub">A Dungeons &amp; Dragons Starter Set Adventure</div>
+        <div class="hero-stats">
+          <div class="hero-stat">🎯 Levels 1–3</div>
+          <div class="hero-stat">👥 4–6 Players</div>
+          <div class="hero-stat">🐉 3 Dragons</div>
+          <div class="hero-stat">⏱️ 3–4 Sessions</div>
+        </div>
+      </div>
+
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <h3>📖 Adventure Summary</h3>
+          <p>For centuries, a magical barrier has kept the dragons of Stormwreck Isle separated and at peace. When that barrier shatters, three dragons — each with their own goals — are thrust into conflict. The players must navigate the chaos, uncover the truth, and decide the fate of the island.</p>
+          <p>The adventure begins at <strong>Dragon's Rest</strong>, a monastery refuge, and unfolds across five key locations on the island.</p>
+        </div>
+
+        <div class="card">
+          <h3>🎭 What's Happening</h3>
+          <p><strong>Sparkrender</strong> (adult blue dragon) broke the barrier and now rules from Stormwreck Peak. <strong>Runara</strong> (bronze dragon in disguise) maintains what's left of the barrier from Dragon's Rest. <strong>Aidron</strong> (her son) has gone missing after a confrontation with Sparkrender.</p>
+          <p>The party must discover why the barrier fell, deal with each dragon, and decide the island's future.</p>
+        </div>
+
+        <div class="card">
+          <h3>🎲 Starting the Adventure</h3>
+          <p>The characters begin at <strong>Dragon's Rest</strong>, having arrived by ship. They meet the elderly monk Runara and her acolytes. Soon after arrival, Aidron crashes near the monastery, wounded and hunted by kobolds.</p>
+          <div class="stat-block">
+            <div class="stat">🏁 Start: Dragon's Rest</div>
+            <div class="stat">🎯 Level 1</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>⚡ Quick Reference</h3>
+          <table class="enc-table">
+            <tr><th>Dragon</th><th>Type</th><th>HP</th><th>AC</th><th>Location</th></tr>
+            <tr><td>Sparkrender</td><td>Adult Blue</td><td>120*</td><td>19</td><td>Stormwreck Peak</td></tr>
+            <tr><td>Runara</td><td>Adult Bronze</td><td>212</td><td>19</td><td>Dragon's Rest</td></tr>
+            <tr><td>Aidron</td><td>Young Bronze</td><td>142</td><td>18</td><td>Missing</td></tr>
+          </table>
+          <p class="text-sm text-dim">* Sparkrender is weakened from breaking the barrier. Full adult blue dragon: 212 HP, AC 19.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DRAGONS ===== -->
+    <section id="page-dragons" class="page">
+      <h2>🐉 The Three Dragons</h2>
+      <p class="text-dim mb-1">The fate of Stormwreck Isle rests on these three draconic powers.</p>
+
+      <div class="card-grid" style="display:flex;flex-direction:column;gap:1em">
+
+        <div class="card dragon-card gold">
+          <div class="copy-btn" data-copy="sparkrender">📋</div>
+          <h3>⚡ Sparkrender</h3>
+          <div class="type">Adult Blue Dragon — Chaotic Evil</div>
+          <p class="desc">Sparkrender is an ancient and arrogant blue dragon who grew tired of the enforced peace. He discovered a weakness in the barrier and shattered it, then claimed Stormwreck Peak as his lair. The effort of breaking the barrier left him significantly weakened.</p>
+          <div class="stat-block">
+            <div class="stat">❤️ HP <span>120 (normally 212)</span></div>
+            <div class="stat">🛡️ AC <span>19</span></div>
+            <div class="stat">📍 <span>Stormwreck Peak</span></div>
+            <div class="stat">⚔️ CR <span>16 (weakened: ~8)</span></div>
+          </div>
+          <p><strong>Personality:</strong> Arrogant, domineering, dismissive of "lesser" creatures. Believes the barrier was a cage and that he's doing the island a favor by ruling it. Will negotiate but only from a position of (perceived) strength.</p>
+          <p><strong>DM Tip:</strong> Play Sparkrender as condescending rather than immediately hostile. He's curious about why these small creatures would dare approach him. His reduced HP means combat is viable but still dangerous — use his <strong>Lightning Breath</strong> (recharge 5-6) to keep the party on their toes.</p>
+          <p><strong>Treasure:</strong> 1,200 gp, <em>potion of healing</em>, <em>spell scroll of chromatic orb</em>, dragon-slayer arrow.</p>
+        </div>
+
+        <div class="card dragon-card">
+          <div class="copy-btn" data-copy="runara">📋</div>
+          <h3>🛡️ Runara</h3>
+          <div class="type">Adult Bronze Dragon (polymorphed) — Lawful Good</div>
+          <p class="desc">Runara has lived for centuries in the guise of an elderly monk at Dragon's Rest. She created and maintained the barrier that kept peace among the dragons. Now that Sparkrender has broken it, she works tirelessly to restore it — but she grows weaker with each passing day.</p>
+          <div class="stat-block">
+            <div class="stat">❤️ HP <span>212</span></div>
+            <div class="stat">🛡️ AC <span>19</span></div>
+            <div class="stat">📍 <span>Dragon's Rest</span></div>
+            <div class="stat">⚔️ CR <span>17</span></div>
+          </div>
+          <p><strong>Personality:</strong> Patient, contemplative, guarded. She presents as a frail old monk named <strong>Brother Runara</strong>. She doesn't reveal her true nature easily — the party must earn her trust. She genuinely cares for her followers and her son.</p>
+          <p><strong>DM Tip:</strong> Runara is a quest-giver and information source, not a combatant (unless the party forces it). She knows the island's history and can guide the party toward the Clifftop Observatory to learn about the barrier. Have her drop cryptic hints about Aidron's whereabouts.</p>
+        </div>
+
+        <div class="card dragon-card">
+          <div class="copy-btn" data-copy="aidron">📋</div>
+          <h3>🌊 Aidron</h3>
+          <div class="type">Young Bronze Dragon — Lawful Good</div>
+          <p class="desc">Runara's son, Aidron is young, impulsive, and eager to prove himself. When the barrier broke, he charged headlong at Sparkrender without a plan — and was soundly defeated. He now lies wounded near Dragon's Rest, rescued by kobolds who serve Sparkrender.</p>
+          <div class="stat-block">
+            <div class="stat">❤️ HP <span>142</span></div>
+            <div class="stat">🛡️ AC <span>18</span></div>
+            <div class="stat">📍 <span>Near Dragon's Rest (initially)</span></div>
+            <div class="stat">⚔️ CR <span>8</span></div>
+          </div>
+          <p><strong>Personality:</strong> Brash, earnest, ashamed of his failure. He desperately wants to redeem himself and defeat Sparkrender. Can become a valuable ally if the party treats him well.</p>
+          <p><strong>DM Tip:</strong> Aidron's arrival scene is the adventure's first big moment — describe him crashing through trees, wounded and gasping. He can provide information about Sparkrender's lair and the kobold tunnels. Consider having him accompany the party for part of the adventure.</p>
+          <p><strong>Motivation:</strong> Prove himself to his mother and defeat Sparkrender.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== LOCATIONS ===== -->
+    <section id="page-locations" class="page">
+      <h2>🗺️ Locations</h2>
+      <p class="text-dim mb-1">Five key locations on Stormwreck Isle. Suggested order: Dragon's Rest → Seagrow Caves → Wreck of Compass Rose → Clifftop Observatory → Stormwreck Peak.</p>
+
+      <!-- Location 1 -->
+      <div class="card gold">
+        <div class="copy-btn" data-copy="loc-dragonrest">📋</div>
+        <h3>🏛️ Dragon's Rest</h3>
+        <div class="location-sections">
+          <div class="loc-desc">A cliffside monastery-turned-sanctuary. Crumbling stone buildings, a central courtyard with a statue of a bronze dragon, and a peaceful garden overlooking the sea. Runara and her followers live here.</div>
+          <h4>Key Encounters</h4>
+          <p>Aidron's crash-landing (opening scene), meeting Runara, kobold scouts prowling the outskirts, possible attacks from Sparkrender's minions.</p>
+          <h4>NPCs</h4>
+          <p><strong>Runara</strong> — elderly monk (see Dragons), <strong>Tarak</strong> — half-elf groundskeeper, <strong>Varnoth</strong> — dwarf cook, <strong>Mirtales</strong> — gnome scholar.</p>
+          <h4>Treasure</h4>
+          <p>Healing potions in the infirmary, a <em>+1 weapon</em> hidden in the crypts beneath the monastery.</p>
+          <h4>DM Tips</h4>
+          <p>This is the party's home base. Describe the sounds of waves and the smell of salt air. Runara can provide quest hooks and healing between expeditions. The crypts beneath hold lore about the barrier's origin.</p>
+        </div>
+      </div>
+
+      <!-- Location 2 -->
+      <div class="card">
+        <div class="copy-btn" data-copy="loc-seagrow">📋</div>
+        <h3>🦀 Seagrow Caves</h3>
+        <div class="location-sections">
+          <div class="loc-desc">Tide-carved sea caves along the island's eastern coast. Bioluminescent fungi line the walls. The caves are home to a peaceful myconid colony — and something darker deeper within.</div>
+          <h4>Key Encounters</h4>
+          <p>Myconid greeting (peaceful), harpies nesting in the upper caves, a sea spawn ambush in the tidal pools, a hidden shrine to an ancient sea god.</p>
+          <h4>NPCs</h4>
+          <p><strong>Myconid Sovereign</strong> — leader of the fungus folk, <strong>Harpy Matron</strong> — vicious but can be bribed with shiny objects.</p>
+          <h4>Treasure</h4>
+          <p>Moonstone (50 gp), <em>potion of water breathing</em>, ancient pearl worth 100 gp.</p>
+          <h4>DM Tips</h4>
+          <p>Myconids communicate via spores — play up the alien nature of this interaction. Harpies can be RP opportunity: they love gossip and might know about shipwrecks. The sea caves connect to the Wreck via underwater passages.</p>
+        </div>
+      </div>
+
+      <!-- Location 3 -->
+      <div class="card">
+        <div class="copy-btn" data-copy="loc-wreck">📋</div>
+        <h3>⚓ Wreck of the Compass Rose</h3>
+        <div class="location-sections">
+          <div class="loc-desc">The remains of a once-proud merchant vessel, half-sunken on jagged rocks. The ship was carrying supplies to Dragon's Rest when it was attacked by Sparkrender's lightning. Now it's a scavenger's paradise — and a kobold encampment.</div>
+          <h4>Key Encounters</h4>
+          <p>Kobold scavengers (4-6), a rust monster in the cargo hold, the ship's ghost (former captain), a locked treasure chest with a poison needle trap.</p>
+          <h4>NPCs</h4>
+          <p><strong>Kobold Boss</strong> — clever little leader, <strong>Captain's Spirit</strong> — restless ghost who needs closure.</p>
+          <h4>Treasure</h4>
+          <p><em>Spell scroll of thunderwave</em>, 200 gp in trade goods, captain's logbook (clues about the barrier), <em>potion of climbing</em>.</p>
+          <h4>DM Tips</h4>
+          <p>This location shines with verticality — the ship has three levels (deck, cabins, cargo hold). Kobolds use hit-and-run tactics. The ghost encounter can be roleplay-heavy: the captain wants his remains returned to his family.</p>
+        </div>
+      </div>
+
+      <!-- Location 4 -->
+      <div class="card">
+        <div class="copy-btn" data-copy="loc-observatory">📋</div>
+        <h3>🔭 Clifftop Observatory</h3>
+        <div class="location-sections">
+          <div class="loc-desc">An ancient tower perched on the island's highest cliff, built by an order of dragon scholars. The observatory holds the key to understanding — and potentially restoring — the broken barrier.</div>
+          <h4>Key Encounters</h4>
+          <p>Magical traps (ancient wards), a guardian construct (clay golem or animated armor), a spectral dragon scholar, scrolls containing barrier lore.</p>
+          <h4>NPCs</h4>
+          <p><strong>Spectral Scholar</strong> — ghost of the last barrier keeper, <strong>Stone Guardian</strong> — constructs that animate if disturbed.</p>
+          <h4>Treasure</h4>
+          <p><em>Spell scroll of identify</em>, barrior restoration notes, <em>+1 wand of the war mage</em>, 50 gp in ancient coins.</p>
+          <h4>DM Tips</h4>
+          <p>The observatory is the adventure's lore dump. The spectral scholar can answer questions about the barrier's origin, why it broke, and how to repair it. Consider making the puzzles here thematic — constellations, dragon lore, elemental resonance.</p>
+        </div>
+      </div>
+
+      <!-- Location 5 -->
+      <div class="card gold">
+        <div class="copy-btn" data-copy="loc-peak">📋</div>
+        <h3>⛰️ Stormwreck Peak</h3>
+        <div class="location-sections">
+          <div class="loc-desc">The highest point on the island, a jagged mountain perpetually wreathed in storm clouds — Sparkrender's doing. The summit is a natural fortress of lightning-scarred stone. This is the final destination.</div>
+          <h4>Key Encounters</h4>
+          <p><strong>THE FINAL BATTLE:</strong> Sparkrender himself. Kobold guards (6-8) in the approach tunnels. Lightning traps. A crumbling bridge over a chasm. Crystal formations that conduct lightning.</p>
+          <h4>NPCs</h4>
+          <p><strong>Sparkrender</strong> (see Dragons section), <strong>Kobold Shaman</strong> — serves the blue dragon, can cast <em>thunderwave</em>.</p>
+          <h4>Treasure</h4>
+          <p>Sparkrender's hoard: 1,200 gp, dragon-slayer arrow, <em>potion of healing</em>, <em>spell scroll of chromatic orb</em>, blue dragon scale (valuable reagent).</p>
+          <h4>DM Tips</h4>
+          <p>Make the ascent feel epic. Each phase of the climb should reveal more of the storm-wreathed peak. The lair has tactical advantages — Sparkrender can use lightning to his benefit. If the party negotiates, consider non-combat resolution: maybe Sparkrender can be convinced to leave if the barrier is restored and he's given a new territory.</p>
+        </div>
+      </div>
+
+      <div class="card text-center">
+        <h3>🗺️ Suggested Adventure Flow</h3>
+        <p style="font-size:0.95rem;line-height:1.8">
+          🏁 <strong>Dragon's Rest</strong> (arrival + Aidron) →<br>
+          🦀 <strong>Seagrow Caves</strong> (myconids + harpies) →<br>
+          ⚓ <strong>Wreck of Compass Rose</strong> (kobolds + ghost) →<br>
+          🔭 <strong>Clifftop Observatory</strong> (lore + barrier secrets) →<br>
+          ⛰️ <strong>Stormwreck Peak</strong> (Sparkrender showdown) 🏆
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== NPC INDEX ===== -->
+    <section id="page-npcs" class="page">
+      <h2>👥 NPC Index</h2>
+      <input type="text" id="npc-search" class="search-box" placeholder="🔍 Search NPCs by name, role, or keywords..." autocomplete="off">
+
+      <div id="npc-list" class="npc-list">
+
+        <div class="npc-item" data-name="runara" data-role="dragon monk bronze">
+          <h4>Runara (Brother Runara)</h4>
+          <div class="role">Adult Bronze Dragon (polymorphed) | Dragon's Rest</div>
+          <div class="desc">Elderly monk who leads Dragon's Rest. Actually an ancient bronze dragon maintaining the barrier. Patient and guarded — doesn't reveal her true nature easily.</div>
+          <div class="tags"><span class="tag">Hidden Dragon</span><span class="tag">Quest Giver</span></div>
+        </div>
+
+        <div class="npc-item" data-name="tarak" data-role="groundskeeper half-elf dragon rest">
+          <h4>Tarak</h4>
+          <div class="role">Half-Elf Groundskeeper | Dragon's Rest</div>
+          <div class="desc">A quiet, observant half-elf who tends the monastery grounds. Noticed strange weather patterns before the barrier broke. Knows the island's terrain well.</div>
+          <div class="tags"><span class="tag">Guide</span><span class="tag">Survival</span></div>
+        </div>
+
+        <div class="npc-item" data-name="varnoth" data-role="cook dwarf dragon rest">
+          <h4>Varnoth</h4>
+          <div class="role">Dwarf Cook | Dragon's Rest</div>
+          <div class="desc">Stout, cheerful dwarf who runs the kitchen. A former adventurer who retired after losing her leg to a trap. Has stories about "the old days" and knows the best mushroom recipes.</div>
+          <div class="tags"><span class="tag">Lore</span><span class="tag">Healing</span></div>
+        </div>
+
+        <div class="npc-item" data-name="mirtales" data-role="scholar gnome dragon rest">
+          <h4>Mirtales</h4>
+          <div class="role">Gnome Scholar | Dragon's Rest</div>
+          <div class="desc">An elderly gnome who studies draconic history. Has been at Dragon's Rest for decades, compiling research on the island's barrier. Knows more than he lets on.</div>
+          <div class="tags"><span class="tag">Researcher</span><span class="tag">Barrier Lore</span></div>
+        </div>
+
+        <div class="npc-item" data-name="myconid sovereign" data-role="fungus plant seagrow caves">
+          <h4>Myconid Sovereign</h4>
+          <div class="role">Fungal Sovereign | Seagrow Caves</div>
+          <div class="desc">Leader of the myconid colony in the Seagrow Caves. Communicates through spores and emotions. Peaceful but wary of surface-dwellers. Can share visions of the island's past.</div>
+          <div class="tags"><span class="tag">Alien</span><span class="tag">Lore</span><span class="tag">Peaceful</span></div>
+        </div>
+
+        <div class="npc-item" data-name="myconid" data-role="fungus plant seagrow caves">
+          <h4>Myconids (colony)</h4>
+          <div class="role">Fungal Humanoids | Seagrow Caves</div>
+          <div class="desc">A colony of peaceful fungus folk. Non-hostile unless provoked. Their spore network allows them to share memories and emotions. Can provide information about the harpies and the underwater tunnels.</div>
+          <div class="tags"><span class="tag">Neutral</span><span class="tag">Spore Network</span></div>
+        </div>
+
+        <div class="npc-item" data-name="harpy" data-role="monster flying seagrow caves">
+          <h4>Harpy Matron + Harpies</h4>
+          <div class="role">Monstrous Humanoids | Seagrow Caves</div>
+          <div class="desc">A small flock of harpies that has taken over the upper caves. Their song lures sailors to their doom. The matron can be bribed with shiny objects — she loves jewelry and gossip.</div>
+          <div class="tags"><span class="tag">Hostile</span><span class="tag">Bribable</span></div>
+        </div>
+
+        <div class="npc-item" data-name="kobold" data-role="monster dragon draconic wreck peak">
+          <h4>Kobolds (various)</h4>
+          <div class="role">Draconic Humanoids | Wreck &amp; Peak</div>
+          <div class="desc">Small, cowardly dragon-worshippers who serve Sparkrender. Found scavenging the Wreck of the Compass Rose and guarding the tunnels up Stormwreck Peak. Use traps and hit-and-run tactics.</div>
+          <div class="tags"><span class="tag">Minions</span><span class="tag">Sparkrender</span><span class="tag">Traps</span></div>
+        </div>
+
+        <div class="npc-item" data-name="sparkrender" data-role="dragon villain blue stormwreck peak">
+          <h4>Sparkrender</h4>
+          <div class="role">Adult Blue Dragon (weakened) | Stormwreck Peak</div>
+          <div class="desc">The main antagonist. Broke the barrier and now rules the island from his peak. Arrogant and condescending. Weakened from the effort — only 120 HP vs normal 212.</div>
+          <div class="tags"><span class="tag">BBEG</span><span class="tag">Dragon</span><span class="tag">Negotiable</span></div>
+        </div>
+
+        <div class="npc-item" data-name="aidron" data-role="dragon bronze young">
+          <h4>Aidron</h4>
+          <div class="role">Young Bronze Dragon | Missing / Near Dragon's Rest</div>
+          <div class="desc">Runara's impulsive son. Charged at Sparkrender alone and lost. Wounded and ashamed. Can become a party ally if treated well.</div>
+          <div class="tags"><span class="tag">Ally</span><span class="tag">Wounded</span></div>
+        </div>
+
+      </div>
+      <div id="npc-none" class="card text-center text-dim" style="display:none">
+        <p>No NPCs match your search.</p>
+      </div>
+    </section>
+
+    <!-- ===== ENCOUNTERS ===== -->
+    <section id="page-encounters" class="page">
+      <h2>⚔️ Encounters by Location</h2>
+      <p class="text-dim mb-1">Organized by location with CR, monsters, tactics, and treasure.</p>
+
+      <div class="card-grid" style="display:flex;flex-direction:column;gap:1em">
+
+        <div class="card gold">
+          <div class="copy-btn" data-copy="enc-dragonrest">📋</div>
+          <h3>🏛️ Dragon's Rest</h3>
+          <table class="enc-table">
+            <tr><th>Encounter</th><th>CR</th><th>Monsters</th><th>Treasure</th></tr>
+            <tr><td>Aidron's Crash</td><td>—</td><td>Cinematic scene</td><td>—</td></tr>
+            <tr><td>Kobold Scouts</td><td>1/4</td><td>2 kobolds + 1 winged kobold</td><td>4 sp each</td></tr>
+            <tr><td>Crypt Guardians</td><td>2</td><td>2 skeletons + 1 specter</td><td>+1 weapon</td></tr>
+            <tr><td>Night Ambush</td><td>1</td><td>3 kobolds + 1 swarm of rats</td><td>—</td></tr>
+          </table>
+          <p><strong>Tactics:</strong> Kobold scouts use hit-and-run. Crypt guardians rise from sarcophagi when disturbed. Night ambush occurs if party rests outside without guard.</p>
+        </div>
+
+        <div class="card">
+          <div class="copy-btn" data-copy="enc-seagrow">📋</div>
+          <h3>🦀 Seagrow Caves</h3>
+          <table class="enc-table">
+            <tr><th>Encounter</th><th>CR</th><th>Monsters</th><th>Treasure</th></tr>
+            <tr><td>Myconid Greeting</td><td>0</td><td>2 myconid adults</td><td>Information</td></tr>
+            <tr><td>Harpy Nest</td><td>1</td><td>3 harpies</td><td>50 gp, moonstone</td></tr>
+            <tr><td>Sea Spawn</td><td>1</td><td>2 sea spawn</td><td>Ancient pearl (100 gp)</td></tr>
+            <tr><td>Tidal Trap</td><td>—</td><td>Environmental (rising water)</td><td>—</td></tr>
+          </table>
+          <p><strong>Tactics:</strong> Myconids are peaceful but can spore-stun if threatened. Harpies use Luring Song to draw characters into water. Sea spawn ambush from tidal pools.</p>
+        </div>
+
+        <div class="card">
+          <div class="copy-btn" data-copy="enc-wreck">📋</div>
+          <h3>⚓ Wreck of the Compass Rose</h3>
+          <table class="enc-table">
+            <tr><th>Encounter</th><th>CR</th><th>Monsters</th><th>Treasure</th></tr>
+            <tr><td>Kobold Scavengers</td><td>1/2</td><td>4 kobolds (deck)</td><td>Trade goods, 30 gp</td></tr>
+            <tr><td>Rust Monster</td><td>1/2</td><td>1 rust monster (cargo hold)</td><td>—</td></tr>
+            <tr><td>Captain's Ghost</td><td>4</td><td>1 specter (captain's quarters)</td><td>Spell scroll (thunderwave)</td></tr>
+            <tr><td>Poison Chest</td><td>—</td><td>Trap (DC 12 poison needle)</td><td>Potion of climbing</td></tr>
+            <tr><td>Kobold Boss</td><td>1</td><td>1 kobold boss + 2 kobolds</td><td>Captain's logbook, 200 gp</td></tr>
+          </table>
+          <p><strong>Tactics:</strong> Kobolds attack from above (rigging, crow's nest). Rust monster targets metal weapons — dramatic moment. Captain's ghost can be resolved peacefully if the party listens to his story.</p>
+        </div>
+
+        <div class="card">
+          <div class="copy-btn" data-copy="enc-observatory">📋</div>
+          <h3>🔭 Clifftop Observatory</h3>
+          <table class="enc-table">
+            <tr><th>Encounter</th><th>CR</th><th>Monsters</th><th>Treasure</th></tr>
+            <tr><td>Arcane Wards</td><td>—</td><td>Magical traps (fire/lightning)</td><td>—</td></tr>
+            <tr><td>Guardian Construct</td><td>2</td><td>1 animated armor + 1 flying sword</td><td>—</td></tr>
+            <tr><td>Spectral Scholar</td><td>—</td><td>Ghost (peaceful encounter)</td><td>Barrier knowledge</td></tr>
+            <tr><td>Laboratory</td><td>—</td><td>Puzzle: align constellations</td><td>+1 wand, scroll (identify)</td></tr>
+          </table>
+          <p><strong>Tactics:</strong> Arcane wards can be disabled with Arcana checks (DC 13). The guardian construct animates only if the party attacks. The spectral scholar wants to share knowledge, not fight.</p>
+        </div>
+
+        <div class="card gold">
+          <div class="copy-btn" data-copy="enc-peak">📋</div>
+          <h3>⛰️ Stormwreck Peak</h3>
+          <table class="enc-table">
+            <tr><th>Encounter</th><th>CR</th><th>Monsters</th><th>Treasure</th></tr>
+            <tr><td>Kobold Tunnel Guards</td><td>1/2</td><td>4 kobolds + traps</td><td>—</td></tr>
+            <tr><td>Lightning Traps</td><td>—</td><td>Environment (conductive crystals)</td><td>—</td></tr>
+            <tr><td>Broken Bridge</td><td>—</td><td>Skill challenge (Acrobatics DC 12)</td><td>—</td></tr>
+            <tr><td>Kobold Shaman</td><td>2</td><td>1 kobold shaman + 2 kobolds</td><td>—</td></tr>
+            <tr><td>⚡ SPARKRENDER</td><td>~8</td><td>1 adult blue dragon (weakened)</td><td>1,200 gp, magic items</td></tr>
+          </table>
+          <p><strong>Tactics:</strong> Sparkrender uses the environment to his advantage — lightning strikes, crumbling ledges, crystal shards. He's arrogant but smart: if reduced to 30 HP, he may try to negotiate or flee. The kobold shaman can cast <em>thunderwave</em> to push characters off ledges.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== MAGIC ITEMS ===== -->
+    <section id="page-magic-items" class="page">
+      <h2>✨ Magic Items</h2>
+      <p class="text-dim mb-1">All known magic items available in the adventure.</p>
+
+      <div class="card-grid card-grid-2">
+
+        <div class="card magic-item gold">
+          <div class="copy-btn" data-copy="magic-weapon">📋</div>
+          <h3>+1 Weapon</h3>
+          <div class="rarity">Uncommon — Any weapon</div>
+          <p>Hidden in the crypts beneath Dragon's Rest. A finely-crafted blade (or other weapon) that grants a +1 bonus to attack and damage rolls. Choose a weapon suited to a party member.</p>
+          <div class="stat-block">
+            <div class="stat">📍 Dragon's Rest Crypts</div>
+            <div class="stat">✏️ +1 attack/damage</div>
+          </div>
+        </div>
+
+        <div class="card magic-item">
+          <div class="copy-btn" data-copy="magic-potion-heal">📋</div>
+          <h3>Potion of Healing</h3>
+          <div class="rarity">Common</div>
+          <p>Restores 2d4+2 hit points. Several are scattered throughout the adventure — the infirmary at Dragon's Rest has 3, and one is in Sparkrender's hoard.</p>
+          <div class="stat-block">
+            <div class="stat">❤️ 2d4+2 HP</div>
+            <div class="stat">📍 Multiple locations</div>
+          </div>
+        </div>
+
+        <div class="card magic-item">
+          <div class="copy-btn" data-copy="magic-scrolls">📋</div>
+          <h3>Spell Scrolls</h3>
+          <div class="rarity">Various</div>
+          <p><strong><em>Chromatic Orb</em></strong> — Sparkrender's hoard. 3rd-level evocation. Deals 3d8 damage (choose type).<br>
+          <strong><em>Thunderwave</em></strong> — Wreck of Compass Rose. 1st-level evocation. 2d8 thunder damage in 15-ft cube.<br>
+          <strong><em>Identify</em></strong> — Clifftop Observatory. 1st-level divination.</p>
+          <div class="stat-block">
+            <div class="stat">🎯 Various locations</div>
+          </div>
+        </div>
+
+        <div class="card magic-item">
+          <div class="copy-btn" data-copy="magic-arrow">📋</div>
+          <h3>Dragon-Slayer Arrow</h3>
+          <div class="rarity">Very Rare (single arrow)</div>
+          <p>A single arrow with a scale of a bronze dragon fletching. When used against a dragon, it deals an extra 6d10 damage. Found in Sparkrender's hoard — delicious dramatic irony.</p>
+          <div class="stat-block">
+            <div class="stat">📍 Sparkrender's Hoard</div>
+            <div class="stat">🐉 +6d10 vs dragons</div>
+          </div>
+        </div>
+
+        <div class="card magic-item">
+          <div class="copy-btn" data-copy="magic-wand">📋</div>
+          <h3>+1 Wand of the War Mage</h3>
+          <div class="rarity">Uncommon</div>
+          <p>Found in the Clifftop Observatory laboratory. Grants +1 bonus to spell attack rolls. Ignore half cover when making ranged spell attacks.</p>
+          <div class="stat-block">
+            <div class="stat">📍 Clifftop Observatory</div>
+            <div class="stat">🔮 +1 spell attacks</div>
+          </div>
+        </div>
+
+        <div class="card magic-item">
+          <div class="copy-btn" data-copy="magic-potion-climb">📋</div>
+          <h3>Potion of Climbing</h3>
+          <div class="rarity">Common</div>
+          <p>Grants a climbing speed equal to walking speed for 1 hour. Found in the locked chest on the Wreck of Compass Rose.</p>
+          <div class="stat-block">
+            <div class="stat">📍 Wreck of Compass Rose</div>
+          </div>
+        </div>
+
+        <div class="card magic-item">
+          <div class="copy-btn" data-copy="magic-potion-breath">📋</div>
+          <h3>Potion of Water Breathing</h3>
+          <div class="rarity">Uncommon</div>
+          <p>Grants the ability to breathe underwater for 1 hour. Found in the Seagrow Caves behind an underwater waterfall.</p>
+          <div class="stat-block">
+            <div class="stat">📍 Seagrow Caves</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== DM TOOLS ===== -->
+    <section id="page-dm-tools" class="page">
+      <h2>🛠️ DM Tools</h2>
+      <p class="text-dim mb-1">Interactive tools to run your session smoothly. Data persists in your browser.</p>
+
+      <!-- Session Info -->
+      <div class="card flex-center" style="justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <strong class="text-gold">Session #<span id="session-num">1</span></strong>
+          <span class="text-dim text-sm"> | Data saved locally</span>
+        </div>
+        <div style="display:flex;gap:0.5em">
+          <button class="btn btn-ghost btn-sm" onclick="resetAll()">⚠️ Reset All Data</button>
+        </div>
+      </div>
+
+      <!-- Tool Grid -->
+      <div class="card-grid card-grid-2" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))">
+
+        <!-- 1. Initiative Tracker -->
+        <div class="card" id="init-tracker-card">
+          <h3>⚔️ Initiative Tracker</h3>
+          <div class="init-form">
+            <input type="text" id="init-name" placeholder="Name" style="flex:1;min-width:80px">
+            <input type="number" id="init-roll" placeholder="Roll" min="1" max="30">
+            <input type="number" id="init-hp" placeholder="HP" min="1">
+            <button class="btn btn-gold btn-sm" onclick="addInitiative()">➕ Add</button>
+          </div>
+          <ul id="init-list" class="init-list"></ul>
+          <div class="flex-center mt-1" style="gap:0.5em;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="sortInitiative()">🔄 Re-sort</button>
+            <button class="btn btn-danger btn-sm" onclick="clearInitDead()">🗑️ Remove Dead</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearInitiative()">🗑️ Clear All</button>
+          </div>
+        </div>
+
+        <!-- 2. Dice Roller -->
+        <div class="card dice-panel">
+          <h3>🎲 Dice Roller</h3>
+          <div class="dice-mod">
+            <label class="text-sm text-dim">Modifier:</label>
+            <input type="number" id="dice-mod" value="0">
+          </div>
+          <div class="dice-grid">
+            <button class="dice-btn" onclick="rollDice(4)">d4</button>
+            <button class="dice-btn" onclick="rollDice(6)">d6</button>
+            <button class="dice-btn" onclick="rollDice(8)">d8</button>
+            <button class="dice-btn" onclick="rollDice(10)">d10</button>
+            <button class="dice-btn" onclick="rollDice(12)">d12</button>
+            <button class="dice-btn" onclick="rollDice(20)">d20</button>
+            <button class="dice-btn" onclick="rollDice(100)">d100</button>
+          </div>
+          <div class="dice-result" id="dice-result">—</div>
+          <div class="text-sm text-dim" id="dice-breakdown"></div>
+          <div class="dice-history" id="dice-history"></div>
+          <button class="btn btn-ghost btn-sm mt-1" onclick="clearDiceHistory()">Clear History</button>
+        </div>
+
+        <!-- 3. Random Encounter Generator -->
+        <div class="card encounter-gen">
+          <h3>🌊 Random Encounter</h3>
+          <p class="text-sm text-dim mb-1">Generate a random encounter for Stormwreck Isle.</p>
+          <button class="btn btn-gold" onclick="generateEncounter()">🎲 Generate</button>
+          <div class="result" id="encounter-result" style="display:none">
+            <div class="monster" id="enc-monster"></div>
+            <div class="detail" id="enc-detail"></div>
+            <div class="stat-block flex-center" style="justify-content:center;margin-top:0.5em">
+              <div class="stat" id="enc-cr"></div>
+              <div class="stat" id="enc-location"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. DM Notes -->
+        <div class="card dm-notes" style="grid-column:span 1">
+          <h3>📝 DM Notes</h3>
+          <p class="text-sm text-dim">Session notes, initiative reminders, plot hooks — write freely. Auto-saved.</p>
+          <textarea id="dm-notes-text" placeholder="Write your session notes here...
+            
+Examples: tonight's plot hooks, NPC voices to remember, encounter adjustments, loot the party found..."></textarea>
+          <div class="flex-center mt-1" style="justify-content:space-between">
+            <span class="text-dim text-sm" id="notes-saved">Auto-saved</span>
+            <button class="btn btn-ghost btn-sm" onclick="clearNotes()">Clear</button>
+          </div>
+        </div>
+
+        <!-- 5. Rest Tracker -->
+        <div class="card" style="grid-column:span 1">
+          <h3>😴 Rest Tracker</h3>
+          <p class="text-sm text-dim mb-1">Track how many short and long rests the party has taken.</p>
+          <div class="rest-tracker">
+            <div>
+              <div class="text-sm text-dim">Short Rests</div>
+              <div class="rest-count" id="short-rest-count">0</div>
+              <button class="btn btn-gold btn-sm" onclick="addRest('short')">➕ Short Rest</button>
+            </div>
+            <div style="font-size:2rem;color:var(--navy-4)">|</div>
+            <div>
+              <div class="text-sm text-dim">Long Rests</div>
+              <div class="rest-count" id="long-rest-count">0</div>
+              <button class="btn btn-gold btn-sm" onclick="addRest('long')">➕ Long Rest</button>
+            </div>
+            <div style="width:100%">
+              <button class="btn btn-ghost btn-sm" onclick="resetRest()" style="width:100%">🔄 Reset Counters</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <p>Dragons of Stormwreck Isle — DM Companion 🐉</p>
+      <p>Built for the May 2nd session. Roll well! 🎲</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ===== NAVIGATION =====
+const sidebar = document.getElementById('sidebar');
+const hamburger = document.getElementById('hamburger');
+const overlay = document.getElementById('overlay');
+const navLinks = document.querySelectorAll('.nav-list a');
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-list a').forEach(a => a.classList.remove('active'));
+  const page = document.getElementById('page-'+pageId);
+  if(page) page.classList.add('active');
+  const link = document.querySelector(`.nav-list a[data-page="${pageId}"]`);
+  if(link) link.classList.add('active');
+  closeSidebar();
+}
+
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+hamburger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', closeSidebar);
+
+navLinks.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    showPage(a.dataset.page);
+  });
+});
+
+// ===== LOCAL STORAGE HELPERS =====
+function lsGet(key, def) { try { const v = localStorage.getItem('swi_'+key); return v!==null ? JSON.parse(v) : def; } catch(e){ return def; } }
+function lsSet(key, val) { try { localStorage.setItem('swi_'+key, JSON.stringify(val)); } catch(e){} }
+
+// ===== SESSION =====
+let sessionNum = lsGet('session', 1);
+document.getElementById('session-num').textContent = sessionNum;
+lsSet('session', sessionNum);
+
+// ===== INITIATIVE TRACKER =====
+let combatants = lsGet('initiative', []);
+function renderInit() {
+  const list = document.getElementById('init-list');
+  if(combatants.length===0) {
+    list.innerHTML = '<li class="text-dim text-sm" style="padding:0.5em;text-align:center;border:none">No combatants yet. Add one above!</li>';
+    return;
+  }
+  list.innerHTML = combatants.map((c,i) => `
+    <li class="${c.dead?'dead':''}">
+      <span class="init-name">${esc(c.name)}</span>
+      <span class="init-roll">${c.roll}</span>
+      <span class="init-hp">❤️ ${c.hp||'?'}</span>
+      <span class="init-actions">
+        <button class="btn btn-sm ${c.dead?'btn-gold':'btn-danger'}" onclick="toggleDead(${i})">${c.dead?'💀':'👍'}</button>
+        <button class="btn btn-sm btn-ghost" onclick="editHP(${i})">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="removeInit(${i})">✕</button>
+      </span>
+    </li>
+  `).join('');
+  lsSet('initiative', combatants);
+}
+function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function addInitiative() {
+  const name = document.getElementById('init-name').value.trim();
+  const roll = parseInt(document.getElementById('init-roll').value);
+  const hp = parseInt(document.getElementById('init-hp').value) || 0;
+  if(!name || !roll) return;
+  combatants.push({name, roll, hp, dead:false});
+  sortInitiative();
+  document.getElementById('init-name').value = '';
+  document.getElementById('init-roll').value = '';
+  document.getElementById('init-hp').value = '';
+  document.getElementById('init-name').focus();
+}
+function removeInit(i) { combatants.splice(i,1); renderInit(); }
+function toggleDead(i) { combatants[i].dead = !combatants[i].dead; renderInit(); }
+function editHP(i) {
+  const newHP = prompt('New HP for '+combatants[i].name+':', combatants[i].hp);
+  if(newHP!==null) { combatants[i].hp = parseInt(newHP)||0; renderInit(); }
+}
+function sortInitiative() { combatants.sort((a,b) => b.roll - a.roll || a.name.localeCompare(b.name)); renderInit(); }
+function clearInitDead() { combatants = combatants.filter(c => !c.dead); renderInit(); }
+function clearInitiative() { if(confirm('Clear all combatants?')) { combatants=[]; renderInit(); } }
+renderInit();
+
+// Enter key for initiative
+document.getElementById('init-name').addEventListener('keydown', e => { if(e.key==='Enter') addInitiative(); });
+document.getElementById('init-roll').addEventListener('keydown', e => { if(e.key==='Enter') addInitiative(); });
+document.getElementById('init-hp').addEventListener('keydown', e => { if(e.key==='Enter') addInitiative(); });
+
+// ===== DICE ROLLER =====
+let diceHistory = lsGet('diceHistory', []);
+function rollDice(sides) {
+  const modifier = parseInt(document.getElementById('dice-mod').value) || 0;
+  const btn = event.target;
+  btn.classList.remove('rolling');
+  void btn.offsetWidth;
+  btn.classList.add('rolling');
+
+  const roll = Math.floor(Math.random() * sides) + 1;
+  const total = roll + modifier;
+
+  setTimeout(() => {
+    document.getElementById('dice-result').textContent = total;
+    document.getElementById('dice-breakdown').textContent = modifier !== 0
+      ? `(${roll} on d${sides} + ${modifier})`
+      : `${roll} on d${sides}`;
+    btn.classList.remove('rolling');
+  }, 300);
+
+  diceHistory.unshift(`d${sides}: ${roll}${modifier!==0?' + '+modifier+' = '+total:''}`);
+  if(diceHistory.length > 50) diceHistory.length = 50;
+  lsSet('diceHistory', diceHistory);
+  renderDiceHistory();
+}
+function renderDiceHistory() {
+  const el = document.getElementById('dice-history');
+  el.innerHTML = diceHistory.map(h => '<div>🎲 '+esc(h)+'</div>').join('');
+}
+function clearDiceHistory() { diceHistory=[]; lsSet('diceHistory',diceHistory); renderDiceHistory(); }
+renderDiceHistory();
+
+// Enter key for modifier
+document.getElementById('dice-mod').addEventListener('keydown', e => { if(e.key==='Enter') rollDice(20); });
+
+// ===== RANDOM ENCOUNTER GENERATOR =====
+const encounters = [
+  {monster:'Kobold Scavengers (×4)', detail:'Scavenging for scraps near the Wreck.', cr:'CR 1/2', loc:'Wreck of Compass Rose'},
+  {monster:'Harpy Flock (×3)', detail:'Their song drifts through the sea caves.', cr:'CR 1', loc:'Seagrow Caves'},
+  {monster:'Myconid Patrol (×2)', detail:'A curious spore scout investigates the party.', cr:'CR 0', loc:'Seagrow Caves'},
+  {monster:'Sea Spawn (×2)', detail:'Risen from the depths near the shoreline.', cr:'CR 1', loc:'Coastal Areas'},
+  {monster:'Rust Monster', detail:'Scurries through the cargo hold.', cr:'CR 1/2', loc:'Wreck of Compass Rose'},
+  {monster:'Kobold Shaman + Guards (×3)', detail:'A patrol in the tunnels of Stormwreck Peak.', cr:'CR 2', loc:'Stormwreck Peak'},
+  {monster:'Swarm of Rats', detail:'Scuttles through the crypts beneath Dragon\'s Rest.', cr:'CR 1/4', loc:'Dragon\'s Rest'},
+  {monster:'Spectral Guardian', detail:'An ancient spirit guarding the observatory.', cr:'CR 1', loc:'Clifftop Observatory'},
+  {monster:'Winged Kobolds (×2)', detail:'Swoop down from the cliffside.', cr:'CR 1/4', loc:'Dragon\'s Rest outskirts'},
+  {monster:'Giant Crab', detail:'Scuttles across the beach, protective of its territory.', cr:'CR 1/4', loc:'Beach / Shoreline'},
+  {monster:'Animated Armor', detail:'Ancient guardian in the observatory.', cr:'CR 1', loc:'Clifftop Observatory'},
+  {monster:'Kobold Boss + Minions (×4)', detail:'The boss rallies its minions for an ambush.', cr:'CR 1', loc:'Wreck of Compass Rose'},
+  {monster:'Air Elemental (weakened)', detail:'A storm spirit drawn by Sparkrender\'s magic.', cr:'CR 5', loc:'Stormwreck Peak'},
+  {monster:'Treasure Guardian (Specter)', detail:'A vengeful spirit protecting hidden loot.', cr:'CR 1', loc:'Any ruins'},
+  {monster:'Lightning Trap', detail:'Conductive crystals that discharge when disturbed.', cr:'Environment', loc:'Stormwreck Peak'},
+];
+function generateEncounter() {
+  const e = encounters[Math.floor(Math.random() * encounters.length)];
+  document.getElementById('enc-monster').textContent = '⚔️ '+e.monster;
+  document.getElementById('enc-detail').textContent = e.detail;
+  document.getElementById('enc-cr').textContent = '⚡ '+e.cr;
+  document.getElementById('enc-location').textContent = '📍 '+e.loc;
+  document.getElementById('encounter-result').style.display = 'block';
+}
+
+// ===== DM NOTES =====
+const notesEl = document.getElementById('dm-notes-text');
+let notesTimeout;
+notesEl.value = lsGet('notes', '');
+notesEl.addEventListener('input', () => {
+  document.getElementById('notes-saved').textContent = '✏️ Unsaved changes...';
+  clearTimeout(notesTimeout);
+  notesTimeout = setTimeout(() => {
+    lsSet('notes', notesEl.value);
+    document.getElementById('notes-saved').textContent = '✅ Auto-saved';
+  }, 500);
+});
+function clearNotes() { if(confirm('Clear all notes?')) { notesEl.value=''; lsSet('notes',''); document.getElementById('notes-saved').textContent='✅ Auto-saved'; } }
+
+// ===== REST TRACKER =====
+let shortRests = lsGet('restsShort', 0);
+let longRests = lsGet('restsLong', 0);
+function updateRestUI() {
+  document.getElementById('short-rest-count').textContent = shortRests;
+  document.getElementById('long-rest-count').textContent = longRests;
+}
+function addRest(type) {
+  if(type==='short') { shortRests++; lsSet('restsShort', shortRests); }
+  else { longRests++; lsSet('restsLong', longRests); }
+  updateRestUI();
+}
+function resetRest() { shortRests=0; longRests=0; lsSet('restsShort',0); lsSet('restsLong',0); updateRestUI(); }
+updateRestUI();
+
+// ===== RESET ALL =====
+function resetAll() {
+  if(!confirm('⚠️ This will delete ALL saved data (initiative, notes, rests, dice history). Continue?')) return;
+  localStorage.clear();
+  sessionNum = 1;
+  lsSet('session', 1);
+  document.getElementById('session-num').textContent = 1;
+  combatants = []; renderInit();
+  diceHistory = []; renderDiceHistory();
+  notesEl.value = ''; lsSet('notes', '');
+  shortRests=0; longRests=0; updateRestUI();
+  lsSet('restsShort',0); lsSet('restsLong',0);
+  document.getElementById('dice-result').textContent = '—';
+  document.getElementById('dice-breakdown').textContent = '';
+  document.getElementById('notes-saved').textContent = '✅ Reset complete';
+}
+
+// ===== NPC SEARCH =====
+document.getElementById('npc-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const items = document.querySelectorAll('.npc-item');
+  let visible = 0;
+  items.forEach(el => {
+    const name = (el.dataset.name||'').toLowerCase();
+    const role = (el.dataset.role||'').toLowerCase();
+    const text = el.textContent.toLowerCase();
+    if(!q || name.includes(q) || role.includes(q) || text.includes(q)) {
+      el.classList.remove('hidden');
+      visible++;
+    } else {
+      el.classList.add('hidden');
+    }
+  });
+  document.getElementById('npc-none').style.display = visible===0 ? 'block' : 'none';
+});
+
+// ===== COPY BUTTONS =====
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const key = this.dataset.copy;
+    let text = '';
+    const parent = this.closest('.card') || this.closest('div');
+    // Build text from the card content
+    const clone = parent.cloneNode(true);
+    const copyBtns = clone.querySelectorAll('.copy-btn');
+    copyBtns.forEach(b => b.remove());
+    text = clone.textContent.trim().replace(/\s+/g, ' ');
+
+    navigator.clipboard.writeText(text).then(() => {
+      this.textContent = '✅';
+      this.classList.add('copied');
+      setTimeout(() => {
+        this.textContent = '📋';
+        this.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      this.textContent = '✅';
+      this.classList.add('copied');
+      setTimeout(() => {
+        this.textContent = '📋';
+        this.classList.remove('copied');
+      }, 2000);
+    });
+  });
+});
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', e => {
+  // Escape closes sidebar
+  if(e.key==='Escape') closeSidebar();
+});
+</script>
+</body>
+</html>
