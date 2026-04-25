@@ -305,7 +305,7 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
 
 /* ===== PRINT ===== */
 @media print{
-  #sidebar,#hamburger,#overlay{display:none!important}
+  #sidebar,#hamburger,#overlay,#lightbox{display:none!important}
   body{background:#fff;color:#222;font-size:11pt}
   #main{max-width:100%;padding:0.5in}
   .card{background:#fff;border:1px solid #ccc;break-inside:avoid}
@@ -313,11 +313,13 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
   .hero::before{display:none}
   h1,h2,h3,h4{color:#222}
   .text-dim{color:#555}
-  .btn,.copy-btn{display:none}
+  .btn,.copy-btn,.map-hint{display:none}
   .stat-block .stat{background:#eee;color:#222}
   .stat-block .stat span{color:#555}
   .init-form,.init-actions{display:none!important}
   .dice-panel,.encounter-gen .btn,.rest-tracker .btn{display:none!important}
+  .map-card{cursor:default;break-inside:avoid;page-break-inside:avoid}
+  .map-card .map-thumb{max-width:100%;border:1px solid #999}
   a{color:#1a3a6b}
 }
 
@@ -348,8 +350,10 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
     <ul class="nav-list">
       <li><a href="#" data-page="home" class="active"><span class="icon">🏠</span> Home</a></li>
       <li><a href="#" data-page="dragons"><span class="icon">🐉</span> The Three Dragons</a></li>
-      <li><a href="#" data-page="locations"><span class="icon">🗺️</span> Locations</a></li>
+      <li><a href="#" data-page="locations"><span class="icon">🏛️</span> Locations</a></li>
+      <li><a href="#" data-page="maps"><span class="icon">🗺️</span> Maps</a></li>
       <li><a href="#" data-page="npcs"><span class="icon">👥</span> NPC Index</a></li>
+      <li><a href="#" data-page="maps"><span class="icon">🗺️</span> Maps</a></li>
       <li><a href="#" data-page="encounters"><span class="icon">⚡</span> Encounters</a></li>
       <li><a href="#" data-page="magic-items"><span class="icon">✨</span> Magic Items</a></li>
       <li><a href="#" data-page="dm-tools"><span class="icon">🛠️</span> DM Tools</a></li>
@@ -572,6 +576,45 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
       </div>
     </section>
 
+    <!-- ===== MAPS ===== -->
+    <section id="page-maps" class="page">
+      <h2>🗺️ Maps of Stormwreck Isle</h2>
+      <p class="text-dim mb-1">Click any map to view full-screen. Use for planning encounters and sharing with players.</p>
+
+      <!-- Island Overview -->
+      <div class="card map-card" onclick="openLightbox('map-isle.jpg','Stormwreck Isle — Full Island Overview')">
+        <img class="map-thumb" src="map-isle.jpg" alt="Stormwreck Isle Overview" loading="lazy">
+        <div class="map-label">🐉 Stormwreck Isle — Full Island Overview</div>
+        <div class="map-desc">The entire island chain showing all five key locations: Dragon's Rest, Seagrow Caves, Wreck of the Compass Rose, Clifftop Observatory, and Stormwreck Peak. Includes surrounding waters and reef formations.</div>
+        <div class="map-hint">🖱️ Click to expand</div>
+      </div>
+
+      <!-- Dragon's Rest -->
+      <div class="card map-card" onclick="openLightbox('map-dragons-rest.jpg','Dragon&apos;s Rest — Monastery Compound')">
+        <img class="map-thumb" src="map-dragons-rest.jpg" alt="Dragon's Rest Monastery" loading="lazy">
+        <div class="map-label">🏛️ Dragon's Rest — Monastery Compound</div>
+        <div class="map-desc">The cliffside monastery compound including the main hall, courtyard with bronze dragon statue, garden terraces, crypts below, and the infirmary. Key NPC locations marked for Runara, Tarak, Varnoth, and Mirtales.</div>
+        <div class="map-hint">🖱️ Click to expand</div>
+      </div>
+
+      <!-- Seagrow Caves -->
+      <div class="card map-card" onclick="openLightbox('map-seagrow-caves.jpg','Seagrow Caves — Underground Network')">
+        <img class="map-thumb" src="map-seagrow-caves.jpg" alt="Seagrow Caves" loading="lazy">
+        <div class="map-label">🦀 Seagrow Caves — Underground Network</div>
+        <div class="map-desc">The tidal cave system with bioluminescent fungi colonies. Includes myconid territory, harpy nesting grounds in the upper reaches, tidal pools with sea spawn, and the underwater passage connecting to the Wreck of Compass Rose.</div>
+        <div class="map-hint">🖱️ Click to expand</div>
+      </div>
+
+      <!-- Stormwreck Peak -->
+      <div class="card map-card" onclick="openLightbox('map-stormwreck-peak.jpg','Stormwreck Peak — Dragon Lair')">
+        <img class="map-thumb" src="map-stormwreck-peak.jpg" alt="Stormwreck Peak Lair" loading="lazy">
+        <div class="map-label">⛰️ Stormwreck Peak — Dragon Lair</div>
+        <div class="map-desc">The summit fortress of Sparkrender. Shows the approach tunnels with kobold guards, lightning crystal formations, the crumbling bridge over the chasm, and Sparkrender's throne room where the final confrontation takes place.</div>
+        <div class="map-hint">🖱️ Click to expand</div>
+      </div>
+
+    </section>
+
     <!-- ===== NPC INDEX ===== -->
     <section id="page-npcs" class="page">
       <h2>👥 NPC Index</h2>
@@ -733,6 +776,45 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
     </section>
 
     <!-- ===== MAGIC ITEMS ===== -->
+    <section id="page-maps" class="page">
+      <h2>🗺️ Maps</h2>
+      <p class="text-dim mb-1">Visual maps of Stormwreck Isle. Click any map to view full size.</p>
+
+      <div style="display:grid;gap:2rem;margin-top:1.5rem">
+
+        <div class="card map-card">
+          <h3>Stormwreck Isle — Overview</h3>
+          <p class="text-dim" style="margin-bottom:0.8rem">The full island, showing Dragon's Rest, Seagrow Caves, Wreck of the Compass Rose, Clifftop Observatory, and Stormwreck Peak.</p>
+          <img src="map-isle.jpg" alt="Stormwreck Isle overview map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
+        </div>
+
+        <div class="card map-card">
+          <h3>Dragon's Rest</h3>
+          <p class="text-dim" style="margin-bottom:0.8rem">The ruined monastery — starting area and safe haven. Runara's sanctuary, courtyard, and cliffside paths.</p>
+          <img src="map-dragons-rest.jpg" alt="Dragon's Rest map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
+        </div>
+
+        <div class="card map-card">
+          <h3>Seagrow Caves</h3>
+          <p class="text-dim" style="margin-bottom:0.8rem">Coastal cave network with myconid territory, harpy nests, and hidden chambers.</p>
+          <img src="map-seagrow-caves.jpg" alt="Seagrow Caves map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
+        </div>
+
+        <div class="card map-card">
+          <h3>Stormwreck Peak</h3>
+          <p class="text-dim" style="margin-bottom:0.8rem">The volcanic lair of Sparkrender. Kobold tunnels, lava chambers, and the dragon's throne room.</p>
+          <img src="map-stormwreck-peak.jpg" alt="Stormwreck Peak map" loading="lazy" style="width:100%;max-width:800px;border-radius:var(--radius);cursor:pointer;display:block;margin:0 auto" onclick="openLightbox(this)">
+        </div>
+
+      </div>
+
+      <!-- Lightbox overlay -->
+      <div id="lightbox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;cursor:pointer;justify-content:center;align-items:center" onclick="closeLightbox(event)">
+        <span style="position:absolute;top:20px;right:30px;color:white;font-size:2.5rem;cursor:pointer;z-index:10000" onclick="closeLightbox(event)">&times;</span>
+        <img id="lightbox-img" src="" alt="Map full view" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:4px;box-shadow:0 0 40px rgba(0,0,0,0.8)">
+      </div>
+    </section>
+
     <section id="page-magic-items" class="page">
       <h2>✨ Magic Items</h2>
       <p class="text-dim mb-1">All known magic items available in the adventure.</p>
@@ -934,6 +1016,13 @@ Examples: tonight's plot hooks, NPC voices to remember, encounter adjustments, l
       <p>Dragons of Stormwreck Isle — DM Companion 🐉</p>
       <p>Built for the May 2nd session. Roll well! 🎲</p>
     </div>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" onclick="closeLightbox(event)">
+    <button class="lb-close" onclick="closeLightbox()" aria-label="Close">✕</button>
+    <img id="lb-img" src="" alt="">
+    <div class="lb-label" id="lb-label"></div>
+  </div>
 
   </main>
 </div>
@@ -1197,11 +1286,51 @@ document.querySelectorAll('.copy-btn').forEach(btn => {
   });
 });
 
+// ===== LIGHTBOX =====
+function openLightbox(src, label) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-label').textContent = label;
+  document.getElementById('lightbox').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e) {
+  if(e && e.target !== e.currentTarget) return; // Only close when clicking backdrop or close button
+  document.getElementById('lightbox').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
 // ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', e => {
-  // Escape closes sidebar
-  if(e.key==='Escape') closeSidebar();
+  // Escape closes sidebar or lightbox
+  if(e.key==='Escape') {
+    const lb = document.getElementById('lightbox');
+    if(lb.classList.contains('show')) { closeLightbox(); return; }
+    closeSidebar();
+  }
 });
+// ===== MAP LIGHTBOX =====
+function openLightbox(img) {
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  lbImg.src = img.src;
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if(e) e.stopPropagation();
+  const lb = document.getElementById('lightbox');
+  lb.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if(e.key === 'Escape') {
+    const lb = document.getElementById('lightbox');
+    if(lb.style.display === 'flex') closeLightbox(e);
+  }
+});
+
 </script>
 </body>
 </html>
