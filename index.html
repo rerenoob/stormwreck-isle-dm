@@ -1303,13 +1303,14 @@ updateRestUI();
 
 // ===== RESET ALL =====
 function resetAll() {
-  if(!confirm('⚠️ This will delete ALL saved data (initiative, notes, rests, dice history). Continue?')) return;
+  if(!confirm('⚠️ This will delete ALL saved data (initiative, combat, notes, rests, dice history). Continue?')) return;
   localStorage.clear();
   sessionNum = 1;
   lsSet('session', 1);
   document.getElementById('session-num').textContent = 1;
   combatants = []; renderInit();
   diceHistory = []; renderDiceHistory();
+  combatantsCM = []; combatRound = 1; combatTurnIdx = -1; combatDiceHist = []; renderCombat(); renderCombatDiceHistory();
   notesEl.value = ''; lsSet('notes', '');
   shortRests=0; longRests=0; updateRestUI();
   lsSet('restsShort',0); lsSet('restsLong',0);
@@ -1388,14 +1389,14 @@ function closeLightbox(e) {
 }
 
 // ===== COMBAT MANAGER =====
-let combatants = lsGet('combatants', []);
+let combatantsCM = lsGet('combatantsCM', []);
 let combatRound = lsGet('combatRound', 1);
 let combatTurnIdx = lsGet('combatTurnIdx', -1);
 let combatDiceHist = lsGet('combatDiceHist', []);
 
 function renderCombat() {
   const grid = document.getElementById('combat-grid');
-  if(combatants.length === 0) {
+  if(combatantsCM.length === 0) {
     grid.innerHTML = '<div class="text-dim text-sm" style="text-align:center;padding:2em;grid-column:1/-1">No combatants yet. Add some above! 🐉</div>';
     document.getElementById('round-tracker').querySelector('.text-dim').textContent = 'Top of round';
     document.getElementById('combat-round').textContent = 1;
@@ -1405,11 +1406,11 @@ function renderCombat() {
   }
 
   document.getElementById('combat-round').textContent = combatRound;
-  const active = combatants[combatTurnIdx];
+  const active = combatantsCM[combatTurnIdx];
   document.getElementById('combat-turn').textContent =
     combatTurnIdx >= 0 && active ? `🎯 ${esc(active.name)}'s turn` : '⚡ Top of round';
 
-  grid.innerHTML = combatants.map((c, i) => `
+  grid.innerHTML = combatantsCM.map((c, i) => `
     <div class="card ${c.dead ? '':''}" style="${c.dead?'opacity:0.5;':''}position:relative;${i===combatTurnIdx?'border-color:var(--gold);box-shadow:0 0 12px var(--gold-glow);':''}">
       ${i===combatTurnIdx?'<div style="position:absolute;top:-8px;right:10px;background:var(--gold);color:var(--navy);font-size:0.65rem;font-weight:700;padding:0.1em 0.6em;border-radius:3px;text-transform:uppercase">Active</div>':''}
       <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap">
@@ -1453,7 +1454,7 @@ function renderCombat() {
       ${c.tempHp > 0 ? `<div class="text-sm" style="margin-top:0.3em">🛡️ Temp HP: <strong>${c.tempHp}</strong></div>` : ''}
     </div>
   `).join('');
-  lsSet('combatants', combatants);
+  lsSet('combatantsCM', combatantsCM);
 }
 
 function addCombatant() {
@@ -1464,7 +1465,7 @@ function addCombatant() {
   const type = document.getElementById('combat-type').value;
   if(!name || !roll) { alert('Name and Initiative roll required.'); return; }
 
-  combatants.push({name, roll, hp: maxhp, maxhp, ac, type, dead: false, tempHp: 0, effects: []});
+  combatantsCM.push({name, roll, hp: maxhp, maxhp, ac, type, dead: false, tempHp: 0, effects: []});
   document.getElementById('combat-name').value = '';
   document.getElementById('combat-roll').value = '';
   document.getElementById('combat-maxhp').value = '';
@@ -1474,20 +1475,20 @@ function addCombatant() {
 }
 
 function sortCombatants() {
-  combatants.sort((a,b) => b.roll - a.roll || a.name.localeCompare(b.name));
-  combatTurnIdx = combatants.length > 0 ? 0 : -1;
+  combatantsCM.sort((a,b) => b.roll - a.roll || a.name.localeCompare(b.name));
+  combatTurnIdx = combatantsCM.length > 0 ? 0 : -1;
   lsSet('combatTurnIdx', combatTurnIdx);
   renderCombat();
 }
 
 function nextCombatTurn() {
-  if(combatants.length === 0) return;
-  // Skip dead combatants
+  if(combatantsCM.length === 0) return;
+  // Skip dead combatantsCM
   let next = combatTurnIdx + 1;
   let attempts = 0;
-  while(attempts < combatants.length) {
-    if(next >= combatants.length) { next = 0; combatRound++; lsSet('combatRound', combatRound); }
-    if(!combatants[next].dead) break;
+  while(attempts < combatantsCM.length) {
+    if(next >= combatantsCM.length) { next = 0; combatRound++; lsSet('combatRound', combatRound); }
+    if(!combatantsCM[next].dead) break;
     next++;
     attempts++;
   }
@@ -1497,93 +1498,93 @@ function nextCombatTurn() {
 }
 
 function combatDamage(i) {
-  const dmg = prompt('Damage to deal to ' + combatants[i].name + ':', '');
+  const dmg = prompt('Damage to deal to ' + combatantsCM[i].name + ':', '');
   if(dmg === null) return;
   const val = parseInt(dmg);
   if(isNaN(val) || val < 0) return;
   // Subtract temp HP first
   let remaining = val;
-  if(combatants[i].tempHp > 0) {
-    if(combatants[i].tempHp >= remaining) {
-      combatants[i].tempHp -= remaining;
+  if(combatantsCM[i].tempHp > 0) {
+    if(combatantsCM[i].tempHp >= remaining) {
+      combatantsCM[i].tempHp -= remaining;
       remaining = 0;
     } else {
-      remaining -= combatants[i].tempHp;
-      combatants[i].tempHp = 0;
+      remaining -= combatantsCM[i].tempHp;
+      combatantsCM[i].tempHp = 0;
     }
   }
-  combatants[i].hp = Math.max(0, combatants[i].hp - remaining);
-  if(combatants[i].hp <= 0) combatants[i].dead = true;
+  combatantsCM[i].hp = Math.max(0, combatantsCM[i].hp - remaining);
+  if(combatantsCM[i].hp <= 0) combatantsCM[i].dead = true;
   renderCombat();
 }
 
 function combatHeal(i) {
-  const heal = prompt('Healing for ' + combatants[i].name + ':', '');
+  const heal = prompt('Healing for ' + combatantsCM[i].name + ':', '');
   if(heal === null) return;
   const val = parseInt(heal);
   if(isNaN(val) || val < 0) return;
-  combatants[i].hp = Math.min(combatants[i].maxhp, combatants[i].hp + val);
-  if(combatants[i].hp > 0) combatants[i].dead = false;
+  combatantsCM[i].hp = Math.min(combatantsCM[i].maxhp, combatantsCM[i].hp + val);
+  if(combatantsCM[i].hp > 0) combatantsCM[i].dead = false;
   renderCombat();
 }
 
 function combatSetHP(i) {
-  const hp = prompt('Set HP for ' + combatants[i].name + ' (max ' + combatants[i].maxhp + '):', combatants[i].hp);
+  const hp = prompt('Set HP for ' + combatantsCM[i].name + ' (max ' + combatantsCM[i].maxhp + '):', combatantsCM[i].hp);
   if(hp === null) return;
   const val = parseInt(hp);
   if(isNaN(val)) return;
-  combatants[i].hp = Math.max(0, Math.min(combatants[i].maxhp, val));
-  combatants[i].dead = combatants[i].hp <= 0;
+  combatantsCM[i].hp = Math.max(0, Math.min(combatantsCM[i].maxhp, val));
+  combatantsCM[i].dead = combatantsCM[i].hp <= 0;
   renderCombat();
 }
 
 function combatTempHP(i) {
-  const thp = prompt('Temp HP for ' + combatants[i].name + ':', '');
+  const thp = prompt('Temp HP for ' + combatantsCM[i].name + ':', '');
   if(thp === null) return;
   const val = parseInt(thp);
   if(isNaN(val) || val < 0) return;
-  combatants[i].tempHp = val;
+  combatantsCM[i].tempHp = val;
   renderCombat();
 }
 
 function combatAddEffect(i) {
-  const effect = prompt('Status effect for ' + combatants[i].name + ' (e.g. "Poisoned", "Prone"):', '');
+  const effect = prompt('Status effect for ' + combatantsCM[i].name + ' (e.g. "Poisoned", "Prone"):', '');
   if(!effect || !effect.trim()) return;
-  if(!combatants[i].effects) combatants[i].effects = [];
-  combatants[i].effects.push(effect.trim());
+  if(!combatantsCM[i].effects) combatantsCM[i].effects = [];
+  combatantsCM[i].effects.push(effect.trim());
   renderCombat();
 }
 
 function combatRemoveEffect(i, eidx) {
-  if(!combatants[i].effects) return;
-  combatants[i].effects.splice(eidx, 1);
+  if(!combatantsCM[i].effects) return;
+  combatantsCM[i].effects.splice(eidx, 1);
   renderCombat();
 }
 
 function combatKill(i) {
-  if(confirm('Kill ' + combatants[i].name + '?')) {
-    combatants[i].dead = true;
-    combatants[i].hp = 0;
+  if(confirm('Kill ' + combatantsCM[i].name + '?')) {
+    combatantsCM[i].dead = true;
+    combatantsCM[i].hp = 0;
     renderCombat();
   }
 }
 
 function combatRevive(i) {
-  const hp = prompt('Revive ' + combatants[i].name + ' with how much HP?', '1');
+  const hp = prompt('Revive ' + combatantsCM[i].name + ' with how much HP?', '1');
   if(hp === null) return;
   const val = parseInt(hp);
   if(isNaN(val) || val < 0) return;
-  combatants[i].hp = Math.min(combatants[i].maxhp, val);
-  combatants[i].dead = false;
+  combatantsCM[i].hp = Math.min(combatantsCM[i].maxhp, val);
+  combatantsCM[i].dead = false;
   renderCombat();
 }
 
 function combatRemove(i) {
-  if(confirm('Remove ' + combatants[i].name + ' from combat?')) {
-    combatants.splice(i, 1);
-    if(combatTurnIdx >= combatants.length) combatTurnIdx = combatants.length - 1;
-    if(combatants.length === 0) combatTurnIdx = -1;
-    lsSet('combatants', combatants);
+  if(confirm('Remove ' + combatantsCM[i].name + ' from combat?')) {
+    combatantsCM.splice(i, 1);
+    if(combatTurnIdx >= combatantsCM.length) combatTurnIdx = combatantsCM.length - 1;
+    if(combatantsCM.length === 0) combatTurnIdx = -1;
+    lsSet('combatantsCM', combatantsCM);
     lsSet('combatTurnIdx', combatTurnIdx);
     renderCombat();
   }
@@ -1591,10 +1592,10 @@ function combatRemove(i) {
 
 function clearCombatants() {
   if(confirm('Clear all combatants and reset combat?')) {
-    combatants = [];
+    combatantsCM = [];
     combatRound = 1;
     combatTurnIdx = -1;
-    lsSet('combatants', combatants);
+    lsSet('combatantsCM', combatantsCM);
     lsSet('combatRound', combatRound);
     lsSet('combatTurnIdx', combatTurnIdx);
     renderCombat();
