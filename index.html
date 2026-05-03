@@ -395,6 +395,7 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
       <li><a href="#" data-page="npcs"><span class="icon">👥</span> NPC Index</a></li>
       <li><a href="#" data-page="encounters"><span class="icon">⚡</span> Encounters</a></li>
       <li><a href="#" data-page="magic-items"><span class="icon">✨</span> Magic Items</a></li>
+      <li><a href="#" data-page="combat"><span class="icon">⚔️</span> Combat</a></li>
       <li><a href="#" data-page="dm-tools"><span class="icon">🛠️</span> DM Tools</a></li>
     </ul>
   </nav>
@@ -908,6 +909,86 @@ hr{border:none;border-top:1px solid var(--navy-4);margin:1.2em 0}
     </section>
 
     <!-- ===== DM TOOLS ===== -->
+    <!-- ===== COMBAT ===== -->
+    <section id="page-combat" class="page">
+      <h2>⚔️ Combat Manager</h2>
+      <p class="text-dim mb-1">Track combatants, HP, initiative, and roll dice — all in one place. Data saves locally.</p>
+
+      <!-- Add Combatant -->
+      <div class="card" style="margin-bottom:1em">
+        <div style="display:flex;flex-wrap:wrap;gap:0.5em;align-items:end">
+          <div style="flex:2;min-width:120px">
+            <label class="text-sm text-dim">Name</label>
+            <input type="text" id="combat-name" class="search-box" placeholder="e.g. Sparkrender" style="margin-bottom:0">
+          </div>
+          <div style="flex:1;min-width:70px">
+            <label class="text-sm text-dim">Init Roll</label>
+            <input type="number" id="combat-roll" class="search-box" placeholder="0" style="margin-bottom:0" min="1" max="30">
+          </div>
+          <div style="flex:1;min-width:70px">
+            <label class="text-sm text-dim">Max HP</label>
+            <input type="number" id="combat-maxhp" class="search-box" placeholder="0" style="margin-bottom:0" min="1">
+          </div>
+          <div style="flex:1;min-width:70px">
+            <label class="text-sm text-dim">AC</label>
+            <input type="number" id="combat-ac" class="search-box" placeholder="0" style="margin-bottom:0" min="1" max="30">
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label class="text-sm text-dim">Type</label>
+            <select id="combat-type" class="search-box" style="margin-bottom:0">
+              <option value="pc">Player (PC)</option>
+              <option value="ally">Ally NPC</option>
+              <option value="enemy" selected>Enemy</option>
+            </select>
+          </div>
+          <button class="btn btn-gold" onclick="addCombatant()" style="height:40px">➕ Add</button>
+        </div>
+      </div>
+
+      <!-- Combat Tracker -->
+      <div id="combat-area">
+        <div class="card gold" id="round-tracker">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5em">
+            <div><strong>Round <span id="combat-round">1</span></strong> <span class="text-dim">•</span> <span id="combat-turn" class="text-dim">Top of round</span></div>
+            <div style="display:flex;gap:0.5em;flex-wrap:wrap">
+              <button class="btn btn-gold btn-sm" onclick="nextCombatTurn()">⏭️ Next Turn</button>
+              <button class="btn btn-ghost btn-sm" onclick="sortCombatants()">🔄 Re-sort Initiative</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearCombatants()">🗑️ Clear All</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="combat-grid" class="card-grid card-grid-2" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
+          <div class="text-dim text-sm" style="text-align:center;padding:2em;grid-column:1/-1">No combatants yet. Add some above! 🐉</div>
+        </div>
+      </div>
+
+      <!-- Quick Roll Panel -->
+      <div class="card" style="margin-top:1em">
+        <h3>🎲 Quick Roll</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5em;align-items:center">
+          <label class="text-sm text-dim">Mod:</label>
+          <input type="number" id="combat-dice-mod" value="0" style="width:60px;padding:0.4em;background:var(--navy-3);border:1px solid var(--navy-4);border-radius:var(--radius);color:var(--text-bright);text-align:center">
+          <button class="dice-btn" onclick="rollCombatDice(4)" style="width:50px">d4</button>
+          <button class="dice-btn" onclick="rollCombatDice(6)" style="width:50px">d6</button>
+          <button class="dice-btn" onclick="rollCombatDice(8)" style="width:50px">d8</button>
+          <button class="dice-btn" onclick="rollCombatDice(10)" style="width:50px">d10</button>
+          <button class="dice-btn" onclick="rollCombatDice(12)" style="width:50px">d12</button>
+          <button class="dice-btn" onclick="rollCombatDice(20)" style="width:50px">d20</button>
+          <button class="dice-btn" onclick="rollCombatDice(100)" style="width:50px">d%</button>
+          <span style="margin-left:0.5em">
+            <button class="btn btn-ghost btn-sm" onclick="rollDamageDice()">💥 Roll Damage</button>
+            <button class="btn btn-ghost btn-sm" onclick="rollCombatDice(20,true)">⚡ Adv</button>
+            <button class="btn btn-ghost btn-sm" onclick="rollCombatDice(20,false,true)">👎 Disadv</button>
+          </span>
+        </div>
+        <div class="dice-result" id="combat-dice-result" style="margin-top:0.5em">—</div>
+        <div class="text-sm text-dim" id="combat-dice-breakdown"></div>
+        <div class="dice-history" id="combat-dice-history"></div>
+        <button class="btn btn-ghost btn-sm mt-1" onclick="clearCombatDiceHistory()">Clear History</button>
+      </div>
+    </section>
+
     <section id="page-dm-tools" class="page">
       <h2>🛠️ DM Tools</h2>
       <p class="text-dim mb-1">Interactive tools to run your session smoothly. Data persists in your browser.</p>
@@ -1306,15 +1387,326 @@ function closeLightbox(e) {
   document.body.style.overflow = '';
 }
 
-// ===== KEYBOARD SHORTCUTS =====
-document.addEventListener('keydown', e => {
-  // Escape closes sidebar or lightbox
-  if(e.key==='Escape') {
-    const lb = document.getElementById('lightbox');
-    if(lb.classList.contains('show')) { closeLightbox(); return; }
-    closeSidebar();
+// ===== COMBAT MANAGER =====
+let combatants = lsGet('combatants', []);
+let combatRound = lsGet('combatRound', 1);
+let combatTurnIdx = lsGet('combatTurnIdx', -1);
+let combatDiceHist = lsGet('combatDiceHist', []);
+
+function renderCombat() {
+  const grid = document.getElementById('combat-grid');
+  if(combatants.length === 0) {
+    grid.innerHTML = '<div class="text-dim text-sm" style="text-align:center;padding:2em;grid-column:1/-1">No combatants yet. Add some above! 🐉</div>';
+    document.getElementById('round-tracker').querySelector('.text-dim').textContent = 'Top of round';
+    document.getElementById('combat-round').textContent = 1;
+    combatRound = 1; combatTurnIdx = -1;
+    lsSet('combatRound', combatRound); lsSet('combatTurnIdx', combatTurnIdx);
+    return;
   }
+
+  document.getElementById('combat-round').textContent = combatRound;
+  const active = combatants[combatTurnIdx];
+  document.getElementById('combat-turn').textContent =
+    combatTurnIdx >= 0 && active ? `🎯 ${esc(active.name)}'s turn` : '⚡ Top of round';
+
+  grid.innerHTML = combatants.map((c, i) => `
+    <div class="card ${c.dead ? '':''}" style="${c.dead?'opacity:0.5;':''}position:relative;${i===combatTurnIdx?'border-color:var(--gold);box-shadow:0 0 12px var(--gold-glow);':''}">
+      ${i===combatTurnIdx?'<div style="position:absolute;top:-8px;right:10px;background:var(--gold);color:var(--navy);font-size:0.65rem;font-weight:700;padding:0.1em 0.6em;border-radius:3px;text-transform:uppercase">Active</div>':''}
+      <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap">
+        <div>
+          <strong style="font-size:1.1rem">${esc(c.name)}</strong>
+          <span class="text-dim text-sm" style="margin-left:0.4em">${c.type==='pc'?'🧑':c.type==='ally'?'🤝':'👹'}</span>
+          ${c.dead?'<span class="tag" style="background:#b32;color:#fff">💀 Dead</span>':''}
+        </div>
+        <span class="init-roll" style="background:var(--navy-3);padding:0.2em 0.6em;border-radius:4px;font-size:0.85rem;font-weight:700">Init: ${c.roll}</span>
+      </div>
+
+      <div style="display:flex;gap:0.8em;margin:0.5em 0;flex-wrap:wrap">
+        <div><span class="text-dim">AC</span> <strong>${c.ac||'?'}</strong></div>
+        <div><span class="text-dim">HP</span> <strong>${c.hp}</strong> / ${c.maxhp}</div>
+        <div class="text-sm text-dim">${c.maxhp > 0 ? Math.round(c.hp/c.maxhp*100)+'%' : ''}</div>
+      </div>
+
+      <!-- HP Bar -->
+      ${c.maxhp > 0 ? `
+      <div style="height:6px;background:var(--navy-4);border-radius:3px;margin-bottom:0.5em;overflow:hidden">
+        <div style="height:100%;width:${Math.max(0,Math.round(c.hp/c.maxhp*100))}%;border-radius:3px;background:${c.hp/c.maxhp > 0.5 ? '#4a9' : c.hp/c.maxhp > 0.2 ? '#c92' : '#c33'};transition:width 0.3s ease"></div>
+      </div>` : ''}
+
+      <!-- Status Effects -->
+      ${c.effects && c.effects.length > 0 ? `
+      <div style="display:flex;flex-wrap:wrap;gap:0.25em;margin-bottom:0.4em">
+        ${c.effects.map(e => `<span class="tag" style="background:var(--purple-2);color:var(--text-bright);font-size:0.7rem">${esc(e)}</span>`).join('')}
+      </div>` : ''}
+
+      <!-- Actions -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.3em">
+        <button class="btn btn-sm btn-gold" onclick="combatDamage(${i})">💥 Damage</button>
+        <button class="btn btn-sm btn-ghost" onclick="combatHeal(${i})">❤️ Heal</button>
+        <button class="btn btn-sm btn-ghost" onclick="combatSetHP(${i})">✏️ Set HP</button>
+        <button class="btn btn-sm btn-ghost" onclick="combatTempHP(${i})">🛡️ Temp</button>
+        <button class="btn btn-sm btn-ghost" onclick="combatAddEffect(${i})">🏷️ Status</button>
+        ${!c.dead ? `<button class="btn btn-sm btn-danger" onclick="combatKill(${i})">💀 Kill</button>` : `<button class="btn btn-sm btn-gold" onclick="combatRevive(${i})">✨ Revive</button>`}
+        <button class="btn btn-sm" style="background:transparent;color:var(--text-dim);border:1px solid var(--navy-4)" onclick="combatRemove(${i})">✕</button>
+      </div>
+
+      ${c.tempHp > 0 ? `<div class="text-sm" style="margin-top:0.3em">🛡️ Temp HP: <strong>${c.tempHp}</strong></div>` : ''}
+    </div>
+  `).join('');
+  lsSet('combatants', combatants);
+}
+
+function addCombatant() {
+  const name = document.getElementById('combat-name').value.trim();
+  const roll = parseInt(document.getElementById('combat-roll').value) || 0;
+  const maxhp = parseInt(document.getElementById('combat-maxhp').value) || 0;
+  const ac = parseInt(document.getElementById('combat-ac').value) || 0;
+  const type = document.getElementById('combat-type').value;
+  if(!name || !roll) { alert('Name and Initiative roll required.'); return; }
+
+  combatants.push({name, roll, hp: maxhp, maxhp, ac, type, dead: false, tempHp: 0, effects: []});
+  document.getElementById('combat-name').value = '';
+  document.getElementById('combat-roll').value = '';
+  document.getElementById('combat-maxhp').value = '';
+  document.getElementById('combat-ac').value = '';
+  document.getElementById('combat-name').focus();
+  sortCombatants();
+}
+
+function sortCombatants() {
+  combatants.sort((a,b) => b.roll - a.roll || a.name.localeCompare(b.name));
+  combatTurnIdx = combatants.length > 0 ? 0 : -1;
+  lsSet('combatTurnIdx', combatTurnIdx);
+  renderCombat();
+}
+
+function nextCombatTurn() {
+  if(combatants.length === 0) return;
+  // Skip dead combatants
+  let next = combatTurnIdx + 1;
+  let attempts = 0;
+  while(attempts < combatants.length) {
+    if(next >= combatants.length) { next = 0; combatRound++; lsSet('combatRound', combatRound); }
+    if(!combatants[next].dead) break;
+    next++;
+    attempts++;
+  }
+  combatTurnIdx = next;
+  lsSet('combatTurnIdx', combatTurnIdx);
+  renderCombat();
+}
+
+function combatDamage(i) {
+  const dmg = prompt('Damage to deal to ' + combatants[i].name + ':', '');
+  if(dmg === null) return;
+  const val = parseInt(dmg);
+  if(isNaN(val) || val < 0) return;
+  // Subtract temp HP first
+  let remaining = val;
+  if(combatants[i].tempHp > 0) {
+    if(combatants[i].tempHp >= remaining) {
+      combatants[i].tempHp -= remaining;
+      remaining = 0;
+    } else {
+      remaining -= combatants[i].tempHp;
+      combatants[i].tempHp = 0;
+    }
+  }
+  combatants[i].hp = Math.max(0, combatants[i].hp - remaining);
+  if(combatants[i].hp <= 0) combatants[i].dead = true;
+  renderCombat();
+}
+
+function combatHeal(i) {
+  const heal = prompt('Healing for ' + combatants[i].name + ':', '');
+  if(heal === null) return;
+  const val = parseInt(heal);
+  if(isNaN(val) || val < 0) return;
+  combatants[i].hp = Math.min(combatants[i].maxhp, combatants[i].hp + val);
+  if(combatants[i].hp > 0) combatants[i].dead = false;
+  renderCombat();
+}
+
+function combatSetHP(i) {
+  const hp = prompt('Set HP for ' + combatants[i].name + ' (max ' + combatants[i].maxhp + '):', combatants[i].hp);
+  if(hp === null) return;
+  const val = parseInt(hp);
+  if(isNaN(val)) return;
+  combatants[i].hp = Math.max(0, Math.min(combatants[i].maxhp, val));
+  combatants[i].dead = combatants[i].hp <= 0;
+  renderCombat();
+}
+
+function combatTempHP(i) {
+  const thp = prompt('Temp HP for ' + combatants[i].name + ':', '');
+  if(thp === null) return;
+  const val = parseInt(thp);
+  if(isNaN(val) || val < 0) return;
+  combatants[i].tempHp = val;
+  renderCombat();
+}
+
+function combatAddEffect(i) {
+  const effect = prompt('Status effect for ' + combatants[i].name + ' (e.g. "Poisoned", "Prone"):', '');
+  if(!effect || !effect.trim()) return;
+  if(!combatants[i].effects) combatants[i].effects = [];
+  combatants[i].effects.push(effect.trim());
+  renderCombat();
+}
+
+function combatRemoveEffect(i, eidx) {
+  if(!combatants[i].effects) return;
+  combatants[i].effects.splice(eidx, 1);
+  renderCombat();
+}
+
+function combatKill(i) {
+  if(confirm('Kill ' + combatants[i].name + '?')) {
+    combatants[i].dead = true;
+    combatants[i].hp = 0;
+    renderCombat();
+  }
+}
+
+function combatRevive(i) {
+  const hp = prompt('Revive ' + combatants[i].name + ' with how much HP?', '1');
+  if(hp === null) return;
+  const val = parseInt(hp);
+  if(isNaN(val) || val < 0) return;
+  combatants[i].hp = Math.min(combatants[i].maxhp, val);
+  combatants[i].dead = false;
+  renderCombat();
+}
+
+function combatRemove(i) {
+  if(confirm('Remove ' + combatants[i].name + ' from combat?')) {
+    combatants.splice(i, 1);
+    if(combatTurnIdx >= combatants.length) combatTurnIdx = combatants.length - 1;
+    if(combatants.length === 0) combatTurnIdx = -1;
+    lsSet('combatants', combatants);
+    lsSet('combatTurnIdx', combatTurnIdx);
+    renderCombat();
+  }
+}
+
+function clearCombatants() {
+  if(confirm('Clear all combatants and reset combat?')) {
+    combatants = [];
+    combatRound = 1;
+    combatTurnIdx = -1;
+    lsSet('combatants', combatants);
+    lsSet('combatRound', combatRound);
+    lsSet('combatTurnIdx', combatTurnIdx);
+    renderCombat();
+  }
+}
+
+function rollCombatDice(sides, adv, disadv) {
+  const mod = parseInt(document.getElementById('combat-dice-mod').value) || 0;
+  const halfling = parseInt(document.getElementById('combat-dice-halfling')?.value) || 0;
+  
+  let roll1 = Math.floor(Math.random() * sides) + 1;
+  let label = `d${sides}`;
+  let total = roll1 + mod + halfling;
+  let breakdown = `(${roll1} on d${sides}`;
+
+  if(adv) {
+    const roll2 = Math.floor(Math.random() * sides) + 1;
+    const chosen = Math.max(roll1, roll2);
+    total = chosen + mod + halfling;
+    breakdown = `(${roll1}, ${roll2}) → ${chosen} on d${sides}`;
+    label = `d${sides} (Adv)`;
+  } else if(disadv) {
+    const roll2 = Math.floor(Math.random() * sides) + 1;
+    const chosen = Math.min(roll1, roll2);
+    total = chosen + mod + halfling;
+    breakdown = `(${roll1}, ${roll2}) → ${chosen} on d${sides}`;
+    label = `d${sides} (Disadv)`;
+  }
+
+  if(mod !== 0) breakdown += ` + ${mod} (mod)`;
+  if(halfling > 0) breakdown += ` + ${halfling} (bonus)`;
+  breakdown += ` = ${total}`;
+
+  document.getElementById('combat-dice-result').textContent = total;
+  document.getElementById('combat-dice-breakdown').textContent = breakdown;
+
+  combatDiceHist.unshift(label + ': ' + breakdown);
+  if(combatDiceHist.length > 50) combatDiceHist.length = 50;
+  lsSet('combatDiceHist', combatDiceHist);
+  renderCombatDiceHistory();
+}
+
+function rollDamageDice() {
+  const input = prompt('Damage dice (e.g. "2d6", "4d8+3", "1d12+2d6"):', '2d6');
+  if(!input) return;
+  try {
+    // Parse composite dice expression like "2d6+4" or "1d12+2d6"
+    const parts = input.match(/(\d+)d(\d+)/g);
+    if(!parts) { alert('Invalid format. Use e.g. "2d6" or "2d6+4"'); return; }
+    
+    let total = 0;
+    let breakdown = [];
+    
+    // Evaluate the full expression
+    const expr = input.replace(/(\d+)d(\d+)/g, (match, count, sides) => {
+      count = parseInt(count);
+      sides = parseInt(sides);
+      let sum = 0;
+      let rolls = [];
+      for(let n = 0; n < count; n++) {
+        const r = Math.floor(Math.random() * sides) + 1;
+        sum += r;
+        rolls.push(r);
+      }
+      total += sum;
+      breakdown.push(count + 'd' + sides + ' [' + rolls.join(',') + ']');
+      return sum;
+    });
+    
+    // Handle any remaining +N or -N after dice
+    // Remove all dice parts, leaving only the flat modifier
+    let flat = input.replace(/(\d+)d(\d+)/g, '').trim();
+    if(flat.startsWith('+')) flat = flat.substring(1);
+    const flatMod = flat ? parseInt(flat) || 0 : 0;
+    total += flatMod;
+
+    const label = input + ' = ' + total;
+    const detail = breakdown.join(' + ') + (flatMod !== 0 ? ' + ' + flatMod + ' (flat)' : '') + ' = ' + total;
+
+    document.getElementById('combat-dice-result').textContent = total;
+    document.getElementById('combat-dice-breakdown').textContent = detail;
+
+    combatDiceHist.unshift('💥 ' + label);
+    if(combatDiceHist.length > 50) combatDiceHist.length = 50;
+    lsSet('combatDiceHist', combatDiceHist);
+    renderCombatDiceHistory();
+  } catch(e) {
+    alert('Error rolling dice: ' + e.message);
+  }
+}
+
+function renderCombatDiceHistory() {
+  const el = document.getElementById('combat-dice-history');
+  el.innerHTML = combatDiceHist.map(h => '<div>🎲 '+esc(h)+'</div>').join('');
+}
+
+function clearCombatDiceHistory() {
+  combatDiceHist = [];
+  lsSet('combatDiceHist', combatDiceHist);
+  renderCombatDiceHistory();
+}
+
+renderCombat();
+renderCombatDiceHistory();
+
+// Enter key for combatant name
+['combat-name','combat-roll','combat-maxhp','combat-ac'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') addCombatant(); });
 });
+
+// Enter key for combat dice mod
+document.getElementById('combat-dice-mod').addEventListener('keydown', e => { if(e.key==='Enter') rollCombatDice(20); });
 
 </script>
 </body>
